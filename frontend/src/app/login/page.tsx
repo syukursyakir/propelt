@@ -56,7 +56,7 @@ export default function LoginPage() {
         <h1 className="mb-2 text-3xl font-semibold tracking-tight">Sign in to Propelt</h1>
         <p className="mb-6 text-sm opacity-70">
           {step === "email"
-            ? "Enter your email — we'll send you a sign-in code."
+            ? "Enter your email — we'll send you a 6-digit code."
             : `Enter the code we sent to ${email}.`}
         </p>
 
@@ -90,17 +90,17 @@ export default function LoginPage() {
               autoFocus
               inputMode="numeric"
               autoComplete="one-time-code"
-              pattern="[0-9]{6,10}"
-              maxLength={10}
-              placeholder="Enter code"
+              pattern="[0-9]{6}"
+              maxLength={6}
+              placeholder="123456"
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
               disabled={status === "pending"}
-              className="rounded-md border border-black/10 bg-transparent px-3 py-2 text-center font-mono text-lg tracking-[0.3em] outline-none focus:border-black/30 dark:border-white/15 dark:focus:border-white/40"
+              className="rounded-md border border-black/10 bg-transparent px-3 py-2 text-center font-mono text-lg tracking-[0.4em] outline-none focus:border-black/30 dark:border-white/15 dark:focus:border-white/40"
             />
             <button
               type="submit"
-              disabled={status === "pending" || code.length < 6}
+              disabled={status === "pending" || code.length !== 6}
               className="rounded-md bg-foreground px-3 py-2 text-sm font-medium text-background disabled:opacity-50"
             >
               {status === "pending" ? "Verifying…" : "Verify"}

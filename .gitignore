@@ -40,3 +40,7 @@ next-env.d.ts
 
 # claude code local settings (per-user)
 .claude/settings.local.json
+
+# scratch / temp
+vercel-env.md
+image*.png

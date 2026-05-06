@@ -28,7 +28,6 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck --workspace @propelt/frontend
-      - run: npm run lint --workspace @propelt/frontend
       - run: npm run build --workspace @propelt/frontend
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co

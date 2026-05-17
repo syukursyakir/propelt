@@ -6,6 +6,7 @@ import morgan from "morgan";
 import { env } from "./lib/env.js";
 import { logger } from "./lib/logger.js";
 import { meRouter } from "./routes/me.js";
+import { resumeRouter } from "./routes/resume.js";
 
 const app = express();
 
@@ -32,9 +33,9 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/api/me", meRouter);
+app.use("/api/resume", resumeRouter);
 
 // Product routes mount here as the job-copilot flow ships.
-// app.use("/api/resume", resumeRouter);
 // app.use("/api/job-target", jobTargetRouter);
 // app.use("/api/questions", questionsRouter);
 // app.use("/api/documents", documentsRouter);

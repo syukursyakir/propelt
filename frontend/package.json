@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@next/env": "16.2.4",
+    "@next/swc-linux-x64-gnu": "^16.2.4",
     "@propelt/shared": "*",
     "@supabase/ssr": "^0.5.1",
     "@supabase/supabase-js": "^2.45.4",

@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { SignOutButton } from "./sign-out-button";
 
@@ -25,6 +26,12 @@ export default async function DashboardPage() {
         <p className="text-sm opacity-70">
           Your resume, target role, and AI coaching progress will appear here as the new job-search flow ships.
         </p>
+        <Link
+          href="/resume"
+          className="mt-4 inline-flex rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background"
+        >
+          Add resume
+        </Link>
       </div>
     </main>
   );

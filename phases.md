@@ -1,222 +1,215 @@
-# Propelt Build Plan — Phased
+# Propelt Build Plan
 
-Reorganization of `plan.md` into discrete phases. Each phase is a self-contained chunk with a clear goal, exit criteria, and dependencies. Don't start a phase until the previous one is done.
+This plan replaces the old launch-toolkit phases. Keep the technical scaffold, auth, Supabase wiring, CI, and monorepo structure. Replace the product layer with the Singapore job-search copilot.
 
----
+## Phase 0 - Pivot Foundation
 
-## Phase 0 — Project Scaffold
-
-**Goal:** Empty but runnable monorepo. Both apps boot locally.
+**Goal:** Rename the product intent across docs, schemas, migration, and placeholders while keeping the stack.
 
 **Tasks**
-- `git init`, root `package.json` with workspaces (`frontend`, `backend`, `shared`)
-- `frontend/`: Next.js 16 (App Router) + React 19 + TypeScript strict
-  - Tailwind v4, `next-themes`, `clsx`, `tailwind-merge`, `cn()` helper
-  - Inter font via `next/font/google`
-  - Path alias `@/*` → `frontend/src/*`
-- `backend/`: Express 5 + TypeScript + tsx + ESM, `dist/` build via `tsc`
-- `shared/`: Zod schemas package
-- Root configs: `.gitignore`, `.editorconfig`, `.nvmrc` (Node 20+)
-- `.github/workflows/`: lint + build (FE), tsc (BE)
+
+- Replace launch-toolkit docs with job-copilot docs
+- Replace shared schemas with resume/job/document schemas
+- Replace initial SQL migration with job-copilot tables
+- Update landing page copy
+- Update dashboard placeholder copy
+- Keep Supabase OTP auth unchanged
 
 **Exit criteria**
-- `npm run dev` in `frontend/` shows a "Hello Propelt" page
-- `npm run dev` in `backend/` boots Express on a port and responds to `GET /health`
-- CI green on a dummy PR
 
-**Depends on:** nothing
+- Typecheck passes
+- App no longer references Product Hunt/HN/launch assets in active code
+- DB migration reflects the new product model
 
----
+**Depends on:** existing scaffold
 
-## Phase 1 — Database & Auth Foundation
+## Phase 1 - Auth And Resume Intake
 
-**Goal:** Supabase project live, schema migrated, magic-link login working end to end.
+**Goal:** A signed-in user can create one active resume profile.
 
 **Tasks**
-- Create new Supabase project (separate from Arabify)
-- Write SQL migration in `supabase/migrations/0001_init.sql`:
-  - `launches`, `generated_assets`, `checklist_progress`, `purchases`
-  - RLS policies on every table (`auth.uid() = user_id`)
-- Backend: `lib/supabase.ts` (admin client), `middleware/requireAuth.ts`
-- Frontend: Supabase SSR client, `/login` page (magic link only), session middleware
-- Backend security setup: Helmet, `express-rate-limit`, CORS, Morgan, `lib/logger.ts`
-- Zod helpers: `parseBody`, `parseQuery`
+
+- Confirm Supabase OTP works end to end
+- Apply new SQL migration in Supabase
+- Backend route: `POST /api/resume/paste`
+- Backend route: `POST /api/resume/upload`
+- Backend route: `GET /api/resume`
+- Backend route: `DELETE /api/resume`
+- Add PDF/DOCX parsing
+- Frontend page: `/resume`
+- Store extracted resume text and input method
+- Show parse status and basic preview
 
 **Exit criteria**
-- User can request a magic link, receive it, click through, and land authenticated on `/dashboard`
-- `requireAuth` rejects anonymous requests with 401
-- RLS verified: a second user cannot read another user's `launches` row
+
+- User can paste resume text and save it
+- User can upload PDF/DOCX and get extracted text
+- User can delete resume data
+- RLS prevents access to another user's resume
 
 **Depends on:** Phase 0
 
----
+## Phase 2 - Target Role Setup
 
-## Phase 2 — Launch Intake
-
-**Goal:** A user can fill out the product intake form and persist a `launches` record.
+**Goal:** User can tell Propelt what job they want.
 
 **Tasks**
-- Shared Zod schema for `Launch` in `shared/schemas/launch.ts`
-- Frontend: `/launches/new` page with form (product name, tagline, description, category, audience, features, founder story, launch date, URLs)
-- Zustand store with persist middleware → key `propelt-draft` (don't lose typed work on refresh)
-- Backend: `POST /api/launches`, `GET /api/launches`, `GET /api/launches/:id`, `PATCH /api/launches/:id`
-- Frontend: `/dashboard` lists user's launches; `/launches/[id]` overview page (read-only for now)
+
+- Shared schema for job targets
+- Backend CRUD routes for one active job target
+- Frontend target setup screen
+- Fields: target role, industry, experience level, employment type, optional job description
+- Dashboard shows resume + target status
 
 **Exit criteria**
-- Submit the form → row appears in Supabase with the user's `user_id`
-- Refresh mid-form → typed data is restored from localStorage
-- Dashboard shows the launch
+
+- User can save and edit target role
+- Optional job description is stored
+- Dashboard clearly shows next step
 
 **Depends on:** Phase 1
 
----
+## Phase 3 - AI Resume Diagnosis And Question Chat
 
-## Phase 3 — AI Generation Engine
-
-**Goal:** All 8 asset types generate from a launch record using Claude. This is the product's core.
+**Goal:** AI reviews the resume and asks useful follow-up questions one at a time.
 
 **Tasks**
-- Backend: `lib/aiGenerator.ts` with one function per asset type:
-  - `ph_tagline`, `ph_description`, `ph_first_comment`
-  - `hn_post`
-  - `reddit_sideproject`, `reddit_indiehackers`, `reddit_saas`
-  - `x_thread`, `linkedin_post`, `email_outreach`
-- Use `@anthropic-ai/sdk` with Claude Sonnet 4.5
-- Endpoint: `POST /api/generate/:launchId/:assetType` → writes `generated_assets` row
-- **Strict rate limit on `/api/generate/*`** (e.g., 10/hour/user) — cost protection
-- Prompt-tune each asset type against 2-3 real example launches before moving on
-- Frontend: trigger generation from launch overview; show loading + generated content
+
+- Backend AI module for resume analysis
+- Generate initial resume diagnosis
+- Generate question queue from resume gaps
+- Backend routes for questions and answers
+- Frontend chat UI
+- Allow skip
+- Rate-limit AI endpoints
+- Log token/cost estimates
 
 **Exit criteria**
-- All 8 asset types produce reasonable output for a real test launch
-- Rate limit returns 429 after the threshold
-- Cost-per-launch measured and logged (target: ~30k tokens / launch)
+
+- AI can produce a useful diagnosis for a real Singapore job seeker resume
+- AI asks relevant follow-up questions
+- User can answer or skip
+- Questions and answers persist
 
 **Depends on:** Phase 2
 
----
+## Phase 4 - Resume Rewrite
 
-## Phase 4 — Asset Display, Edit, Regenerate
-
-**Goal:** Users can view, copy, edit, and regenerate generated assets.
+**Goal:** User gets improved resume content from their resume plus chat answers.
 
 **Tasks**
-- Frontend: `/launches/[id]/assets` page — one card per asset type
-- Render with `react-markdown` + `remark-gfm`
-- Edit: plain `<textarea>` writing to `edited_content` (no TipTap yet)
-- Copy-to-clipboard with `react-hot-toast` "Copied!" feedback
-- Regenerate button → increments `generation_count`
-- Tier-based regeneration limits enforced server-side (Solo / Pro / Founder)
+
+- Generate improved bullet points
+- Generate full resume rewrite
+- Store generated documents
+- Frontend document viewer/editor
+- Save edits
+- Copy-to-clipboard feedback
 
 **Exit criteria**
-- Edits persist across reloads
-- Copy works on every asset card
-- Regeneration limit returns a clear error when exceeded
+
+- User can generate improved bullets
+- User can generate full rewritten resume
+- User can edit and save generated content
 
 **Depends on:** Phase 3
 
----
+## Phase 5 - Job-Specific Application Pack
 
-## Phase 5 — Checklist & Reminder Emails
-
-**Goal:** Pre-launch checklist with date-triggered email reminders.
+**Goal:** If the user provides a job description, Propelt tailors materials for that job.
 
 **Tasks**
-- Define sacred task keys: `t-{day}_{action}` (e.g., `t-7_notify_hunters`, `t-1_final_review`, `t-0_post_at_midnight`)
-- Frontend: `/launches/[id]/checklist` page with completion toggles
-- Local cache key `propelt-checklist-{launchId}`; source of truth is `checklist_progress` table
-- Backend: `crons/checklistReminders.ts` using `node-cron`
-  - Daily job: find launches whose `launch_date - N` matches today, send reminder per task key
-- `lib/emailService.ts` — Resend wrapper with templates per reminder type
+
+- Job Match Review: missing keywords, relevant strengths, gaps
+- Generate targeted resume
+- Generate cover letter
+- Generate short interview brief
+- Frontend tabs for generated documents
 
 **Exit criteria**
-- Toggling a task marks it complete in DB
-- A test launch with `launch_date = today + 7` triggers the T-7 email when the cron runs
-- Emails render correctly in Gmail + Apple Mail
 
-**Depends on:** Phase 2 (needs `launches`); independent of Phase 3/4
+- User can paste a JD and generate job-specific materials
+- App explains what changed and why
+- User can edit and save each document
 
----
+**Depends on:** Phase 4
 
-## Phase 6 — Payments (Lemon Squeezy)
+## Phase 6 - PDF/DOCX Export
 
-**Goal:** Users pay, get marked paid, and access gated features.
+**Goal:** User can export clean application documents.
 
 **Tasks**
-- Lemon Squeezy account + 3 product variants (Solo / Pro / Founder)
-- Frontend: `/pricing` page, checkout link per tier
-- Backend: `POST /api/webhooks/lemonsqueezy` — verify signature, upsert `purchases`, set `launches.paid_at` and `launches.tier`
-- `middleware/requirePaid.ts` — gate `/api/generate/*` behind a paid launch
-- Audit trail: every webhook event logged
+
+- Simple resume template
+- Simple cover letter template
+- PDF export
+- DOCX export
+- Record export metadata
 
 **Exit criteria**
-- Test purchase flows through checkout → webhook → DB → unlocks generation
-- Unpaid launch hitting `/api/generate/*` returns 402
-- Webhook signature verification rejects forged requests
 
-**Depends on:** Phase 3 (gating the generate endpoint)
+- Exported resume opens cleanly
+- Exported DOCX is editable
+- PDF formatting is acceptable on desktop and mobile preview
 
----
+**Depends on:** Phase 4
 
-## Phase 7 — Landing Page & Polish
+## Phase 7 - Privacy, Analytics, And Emails
 
-**Goal:** Marketing site that converts. Plan flags this as the highest-leverage day.
+**Goal:** Make the product trustworthy enough for sensitive resume data.
 
 **Tasks**
-- `/` landing page: hero, problem statement, asset gallery (real outputs), pricing teaser, FAQ, CTA
-- Spend a full day on **copy** — the asset list and value prop are the hook
-- SEO: title/description per page, OpenGraph images, sitemap, robots.txt
-- Vercel Analytics + PostHog wired up; track funnel: visit → signup → pay → generate
-- 404 page, error boundaries, loading states across the app
+
+- Privacy policy page
+- Delete-data workflow
+- Analytics events without sensitive content
+- Email consent field
+- Brevo transactional/product email setup
+- Optional reminder emails for job-search habits
 
 **Exit criteria**
-- Lighthouse > 90 on landing
-- Funnel events visible in PostHog
-- Real visitors can complete signup → pay → generate without hitting a broken state
 
-**Depends on:** Phases 1-6 (need the product working to demo it)
+- User can understand and control stored data
+- Analytics avoids resume/job-description text
+- Email behavior is explicit and appropriate
 
----
+**Depends on:** Phase 1
 
-## Phase 8 — Beta & Launch
+## Phase 8 - Freemium And Billing
 
-**Goal:** Ship it.
+**Goal:** Add monetization after the core flow works.
 
 **Tasks**
-- Recruit 5-10 beta founders from IndieHackers / X
-- Watch them use it; fix breaks; iterate copy
-- **Dogfood:** use Propelt to generate Propelt's own launch assets — screenshot the moment
-- Launch day: post on Product Hunt + HN + Reddit + X using your own outputs
-- Monitor: Anthropic spend, error rates, signup-to-pay conversion
+
+- Define free limits
+- Lemon Squeezy checkout
+- Webhook verification
+- Billing table
+- Gate full rewrite, job tailoring, exports, or regeneration limits
 
 **Exit criteria**
-- Live on PH / HN / Reddit / X
-- First paying customer
-- No P0 bugs in the 48h after launch
 
-**Depends on:** Phase 7
+- Paid purchase unlocks paid features
+- Free users receive clear upgrade prompts
+- Webhook signature verification rejects forged events
 
----
+**Depends on:** Phase 5
 
-## Cross-cutting (do throughout, not a phase)
+## Later Features
 
-- **Sacred IDs** — never rename once shipped:
-  - asset type keys (`ph_tagline`, `hn_post`, …)
-  - checklist task keys (`t-7_notify_hunters`, …)
-  - persistence keys (`propelt-draft`, `propelt-checklist-{launchId}`)
-- **RLS on every new table** — no exceptions
-- **Rate-limit any new endpoint that calls Claude** before merging it
-- **Zod schemas in `shared/`** — import on both sides; no duplicated types
+- Application tracker
+- Job-search weekly plan
+- Interview practice mode
+- Portfolio/LinkedIn review
+- Skills gap and course suggestions
+- Multiple resumes
+- Recruiter outreach messages
 
----
+## Cross-Cutting Rules
 
-## Phase dependency graph
-
-```
-0 ─► 1 ─► 2 ─► 3 ─► 4 ─► 7 ─► 8
-              │    │
-              │    └──► 6 ──┘
-              └──► 5 ──────► 7
-```
-
-Phase 5 (checklist) and Phase 6 (payments) can run in parallel after Phase 3.
+- Use RLS on every table
+- Use Zod schemas in `shared/`
+- Rate-limit every AI endpoint
+- Never log resume contents, job descriptions, or generated sensitive content
+- Keep one active resume for MVP
+- Users must be able to delete sensitive data

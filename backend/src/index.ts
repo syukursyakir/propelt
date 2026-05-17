@@ -33,10 +33,11 @@ app.get("/health", (_req, res) => {
 
 app.use("/api/me", meRouter);
 
-// Phase 2+ routes mount here.
-// app.use("/api/launches", launchesRouter);
-// app.use("/api/generate", generateRouter);
-// app.use("/api/checklist", checklistRouter);
+// Product routes mount here as the job-copilot flow ships.
+// app.use("/api/resume", resumeRouter);
+// app.use("/api/job-target", jobTargetRouter);
+// app.use("/api/questions", questionsRouter);
+// app.use("/api/documents", documentsRouter);
 // app.use("/api/webhooks", webhooksRouter);
 
 app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {

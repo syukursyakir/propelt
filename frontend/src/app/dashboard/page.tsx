@@ -23,7 +23,7 @@ export default async function DashboardPage() {
       </p>
       <div className="rounded-md border border-black/10 p-6 dark:border-white/15">
         <p className="text-sm opacity-70">
-          Your launches will appear here once Phase 2 ships.
+          Your resume, target role, and AI coaching progress will appear here as the new job-search flow ships.
         </p>
       </div>
     </main>

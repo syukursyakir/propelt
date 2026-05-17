@@ -2,7 +2,7 @@
   "name": "propelt",
   "private": true,
   "version": "0.0.0",
-  "description": "Propelt — launch toolkit for indie founders",
+  "description": "Propelt — AI job-search copilot for Singapore",
   "workspaces": [
     "frontend",
     "backend",

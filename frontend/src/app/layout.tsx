@@ -9,8 +9,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Propelt — launch toolkit for indie founders",
-  description: "Generate every asset you need to launch your product on Product Hunt, HN, Reddit, and more.",
+  title: "Propelt — AI job-search copilot for Singapore",
+  description: "Improve your resume, answer AI coaching questions, and create stronger job application materials.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Propelt",
-  description: "Propelt deployment skeleton",
+  description: "AI resume and graduate job application assistant",
 };
 
 export default function RootLayout({

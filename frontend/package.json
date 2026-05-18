@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@propelt/shared": "*",
+    "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.45.4",
     "next": "^16.0.0",
     "react": "^19.0.0",

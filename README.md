@@ -1,6 +1,22 @@
 # Propelt
 
-Clean deployable skeleton for the Propelt monorepo.
+AI resume and graduate job application assistant for Singapore-focused early-career candidates.
+
+## Current MVP
+
+- Supabase login with Google and email/password
+- Required onboarding with school, course, graduation year, target role, and target industry
+- Resume upload parsing for PDF/DOCX plus pasted text fallback
+- Saved reusable resume text profiles
+- New application flow with a saved resume, pasted job description, and five candidate questions
+- OpenAI-backed generation of Sections A-F:
+  - Candidate fit analysis
+  - ATS keyword analysis
+  - Tailored professional summary
+  - Tailored resume
+  - Explanation of changes
+  - Additional suggestions
+- Saved generated applications with tabbed result view, copy buttons, and editable sections
 
 ## Stack
 
@@ -8,7 +24,8 @@ Clean deployable skeleton for the Propelt monorepo.
 - TypeScript
 - Next.js frontend in `frontend`
 - Express backend in `backend`
-- Supabase client placeholders for auth/database
+- Supabase Auth/Postgres
+- OpenAI API for generation
 - Shared Zod schemas and inferred TypeScript types in `shared`
 
 ## Local Setup
@@ -21,13 +38,13 @@ cp frontend/.env.example frontend/.env.local
 cp backend/.env.example backend/.env
 ```
 
-Fill in Supabase values when you have a Supabase project. The app can start without them, but Supabase clients will remain unconfigured.
+Create a Supabase project, enable Google auth if you want OAuth locally, and apply the migration in `supabase/migrations/0001_mvp_app.sql`.
 
 ## Run Locally
 
 ```bash
-npm run dev:frontend
 npm run dev:backend
+npm run dev:frontend
 ```
 
 The frontend defaults to `http://localhost:3000`. The backend defaults to `http://localhost:4000`.
@@ -58,9 +75,16 @@ FRONTEND_URL=
 SUPABASE_URL=
 SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-5-mini
 ```
 
-Supabase is managed separately through the Supabase dashboard and project environment values. This repository does not include database migrations.
+Supabase:
+
+- Apply `supabase/migrations/0001_mvp_app.sql`
+- Enable email/password auth
+- Configure Google OAuth provider
+- Add local and deployed frontend URLs to Auth redirect URLs
 
 ## Deployment Notes
 
@@ -79,4 +103,4 @@ Railway backend:
 - Start command from repo root: `npm run start:backend`
 - Add the backend environment variables listed above.
 
-When deploying the backend from `backend` as the service root, make sure Railway still installs npm workspaces from the repository root so `@propelt/shared` is available.
+The backend verifies Supabase JWTs on protected endpoints and uses the Supabase service role key for user-owned database writes.

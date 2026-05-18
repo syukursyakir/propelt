@@ -7,6 +7,8 @@ export type BackendEnv = {
   supabaseUrl?: string;
   supabaseAnonKey?: string;
   supabaseServiceRoleKey?: string;
+  openaiApiKey?: string;
+  openaiModel: string;
 };
 
 const parsePort = (value: string | undefined) => {
@@ -25,4 +27,6 @@ export const env: BackendEnv = {
   supabaseUrl: process.env.SUPABASE_URL,
   supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+  openaiApiKey: process.env.OPENAI_API_KEY,
+  openaiModel: process.env.OPENAI_MODEL ?? "gpt-5-mini",
 };

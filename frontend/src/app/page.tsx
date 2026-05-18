@@ -1,45 +1,44 @@
-import { healthCheckSchema } from "@propelt/shared";
+import Link from "next/link";
 
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-
-export default async function Home() {
-  let apiStatus = "not checked";
-
-  try {
-    const response = await fetch(`${backendUrl}/health`, {
-      cache: "no-store",
-      next: { revalidate: 0 },
-    });
-    const data: unknown = await response.json();
-    apiStatus = healthCheckSchema.parse(data).status;
-  } catch {
-    apiStatus = "unavailable";
-  }
-
+export default function Home() {
   return (
-    <main className="shell">
-      <section className="panel" aria-labelledby="page-title">
-        <p className="eyebrow">Propelt</p>
-        <h1 id="page-title">Clean deployment skeleton</h1>
-        <p>
-          This repo is ready for a Next.js frontend, an Express API, Supabase
-          configuration, and shared TypeScript contracts.
-        </p>
-        <div className="status" aria-label="Environment status">
-          <div className="status-row">
-            <span>Backend URL</span>
-            <strong>{backendUrl}</strong>
-          </div>
-          <div className="status-row">
-            <span>API health</span>
-            <strong>{apiStatus}</strong>
-          </div>
-          <div className="status-row">
-            <span>Supabase public URL</span>
-            <strong>{supabaseUrl ? "configured" : "missing"}</strong>
+    <main className="page">
+      <nav className="nav">
+        <div className="brand">Propelt</div>
+        <div className="actions">
+          <Link className="button secondary" href="/auth">
+            Log in
+          </Link>
+        </div>
+      </nav>
+      <section className="hero">
+        <div className="stack">
+          <h1>Turn a real resume into a sharper job application.</h1>
+          <p>
+            Propelt helps students, fresh graduates, and early-career candidates
+            tailor their resume to a target role while keeping every claim
+            truthful and recruiter-ready.
+          </p>
+          <div className="actions">
+            <Link className="button" href="/auth">
+              Start tailoring
+            </Link>
+            <Link className="button secondary" href="/auth">
+              I already have an account
+            </Link>
           </div>
         </div>
+        <aside className="hero-card stack" aria-label="What Propelt generates">
+          <strong>Every generation includes</strong>
+          <ul className="list">
+            <li>Candidate fit analysis</li>
+            <li>ATS keyword alignment</li>
+            <li>Tailored professional summary</li>
+            <li>Truthful rewritten resume</li>
+            <li>Reasoning behind the changes</li>
+            <li>Practical improvement suggestions</li>
+          </ul>
+        </aside>
       </section>
     </main>
   );

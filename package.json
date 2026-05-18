@@ -2,7 +2,7 @@
   "name": "propelt",
   "private": true,
   "version": "0.0.0",
-  "description": "Clean Propelt monorepo skeleton",
+  "description": "AI resume and graduate job application assistant",
   "workspaces": [
     "frontend",
     "backend",

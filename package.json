@@ -16,6 +16,7 @@
     "build:frontend": "npm --workspace @propelt/frontend run build",
     "build:backend": "npm run build:shared && npm --workspace @propelt/backend run build",
     "build:shared": "npm --workspace @propelt/shared run build",
+    "start": "npm run start:backend",
     "start:frontend": "npm --workspace @propelt/frontend run start",
     "start:backend": "npm --workspace @propelt/backend run start",
     "typecheck": "npm --workspace @propelt/shared run typecheck && npm --workspace @propelt/backend run typecheck && npm --workspace @propelt/frontend run typecheck"

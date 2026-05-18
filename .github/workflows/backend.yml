@@ -8,6 +8,7 @@ on:
       - "shared/**"
       - "package.json"
       - "package-lock.json"
+      - "tsconfig.base.json"
       - ".github/workflows/backend.yml"
   pull_request:
     paths:
@@ -15,6 +16,7 @@ on:
       - "shared/**"
       - "package.json"
       - "package-lock.json"
+      - "tsconfig.base.json"
       - ".github/workflows/backend.yml"
 
 jobs:
@@ -27,5 +29,5 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npm run typecheck --workspace @propelt/backend
-      - run: npm run build --workspace @propelt/backend
+      - run: npm run typecheck
+      - run: npm run build:backend

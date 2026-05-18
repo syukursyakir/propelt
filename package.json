@@ -2,25 +2,25 @@
   "name": "propelt",
   "private": true,
   "version": "0.0.0",
-  "description": "Propelt — AI job-search copilot for Singapore",
+  "description": "Clean Propelt monorepo skeleton",
   "workspaces": [
     "frontend",
     "backend",
     "shared"
   ],
   "scripts": {
-    "dev:frontend": "npm --workspace frontend run dev",
-    "dev:backend": "npm --workspace backend run dev",
-    "build:frontend": "npm --workspace frontend run build",
-    "build:backend": "npm --workspace shared run build && npm --workspace backend run build",
-    "build:shared": "npm --workspace shared run build",
-    "lint:frontend": "npm --workspace frontend run lint",
-    "typecheck": "npm --workspace shared run typecheck && npm --workspace backend run typecheck && npm --workspace frontend run typecheck"
+    "dev": "npm run dev:backend & npm run dev:frontend",
+    "dev:frontend": "npm --workspace @propelt/frontend run dev",
+    "dev:backend": "npm --workspace @propelt/backend run dev",
+    "build": "npm run build:shared && npm run build:backend && npm run build:frontend",
+    "build:frontend": "npm --workspace @propelt/frontend run build",
+    "build:backend": "npm run build:shared && npm --workspace @propelt/backend run build",
+    "build:shared": "npm --workspace @propelt/shared run build",
+    "start:frontend": "npm --workspace @propelt/frontend run start",
+    "start:backend": "npm --workspace @propelt/backend run start",
+    "typecheck": "npm --workspace @propelt/shared run typecheck && npm --workspace @propelt/backend run typecheck && npm --workspace @propelt/frontend run typecheck"
   },
   "engines": {
     "node": ">=20"
-  },
-  "dependencies": {
-    "clear": "^0.1.0"
   }
 }

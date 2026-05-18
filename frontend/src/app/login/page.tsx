@@ -31,6 +31,23 @@ export default function LoginPage() {
     setStep("code");
   }
 
+  async function onGoogleSignIn() {
+    setStatus("pending");
+    setError(null);
+    const supabase = createSupabaseBrowserClient();
+    const origin = window.location.origin;
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${origin}/auth/callback?next=/dashboard`,
+      },
+    });
+    if (error) {
+      setStatus("idle");
+      setError(error.message);
+    }
+  }
+
   async function onVerify(e: React.FormEvent) {
     e.preventDefault();
     setStatus("pending");
@@ -56,32 +73,52 @@ export default function LoginPage() {
         <h1 className="mb-2 text-3xl font-semibold tracking-tight">Sign in to Propelt</h1>
         <p className="mb-6 text-sm opacity-70">
           {step === "email"
-            ? "Enter your email — we'll send you a 6-digit code."
+            ? "Continue with Google or enter your email for a 6-digit code."
             : `Enter the code we sent to ${email}.`}
         </p>
 
         {step === "email" ? (
-          <form onSubmit={onSendCode} className="flex flex-col gap-3">
-            <input
-              type="email"
-              required
-              autoFocus
-              autoComplete="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={status === "pending"}
-              className="rounded-md border border-black/10 bg-transparent px-3 py-2 outline-none focus:border-black/30 dark:border-white/15 dark:focus:border-white/40"
-            />
+          <div className="flex flex-col gap-4">
             <button
-              type="submit"
-              disabled={status === "pending" || email.length === 0}
-              className="rounded-md bg-foreground px-3 py-2 text-sm font-medium text-background disabled:opacity-50"
+              type="button"
+              onClick={onGoogleSignIn}
+              disabled={status === "pending"}
+              className="flex items-center justify-center gap-3 rounded-md border border-black/10 px-3 py-2 text-sm font-medium hover:bg-black/5 disabled:opacity-50 dark:border-white/15 dark:hover:bg-white/5"
             >
-              {status === "pending" ? "Sending…" : "Send code"}
+              <span className="grid size-5 place-items-center rounded-full bg-white text-sm font-bold text-black">
+                G
+              </span>
+              Continue with Google
             </button>
-            {error && <p className="text-sm text-red-500">{error}</p>}
-          </form>
+
+            <div className="flex items-center gap-3 text-xs opacity-50">
+              <div className="h-px flex-1 bg-current" />
+              or
+              <div className="h-px flex-1 bg-current" />
+            </div>
+
+            <form onSubmit={onSendCode} className="flex flex-col gap-3">
+              <input
+                type="email"
+                required
+                autoFocus
+                autoComplete="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={status === "pending"}
+                className="rounded-md border border-black/10 bg-transparent px-3 py-2 outline-none focus:border-black/30 dark:border-white/15 dark:focus:border-white/40"
+              />
+              <button
+                type="submit"
+                disabled={status === "pending" || email.length === 0}
+                className="rounded-md bg-foreground px-3 py-2 text-sm font-medium text-background disabled:opacity-50"
+              >
+                {status === "pending" ? "Sending..." : "Send code"}
+              </button>
+              {error && <p className="text-sm text-red-500">{error}</p>}
+            </form>
+          </div>
         ) : (
           <form onSubmit={onVerify} className="flex flex-col gap-3">
             <input
@@ -103,7 +140,7 @@ export default function LoginPage() {
               disabled={status === "pending" || code.length !== 6}
               className="rounded-md bg-foreground px-3 py-2 text-sm font-medium text-background disabled:opacity-50"
             >
-              {status === "pending" ? "Verifying…" : "Verify"}
+              {status === "pending" ? "Verifying..." : "Verify"}
             </button>
             {error && <p className="text-sm text-red-500">{error}</p>}
             <button

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Newsreader, Inter } from "next/font/google";
+import { AuthHashRedirect } from "./auth-hash-redirect";
 import "./globals.css";
 
 const newsreader = Newsreader({
@@ -29,7 +30,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${newsreader.variable} ${inter.variable}`}>
-      <body>{children}</body>
+      <body>
+        <AuthHashRedirect />
+        {children}
+      </body>
     </html>
   );
 }

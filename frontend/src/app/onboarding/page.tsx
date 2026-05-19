@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { CandidateProfile } from "@propelt/shared";
 import { api } from "@/lib/api";
 import { useSession } from "@/lib/use-session";
+import { AppShell } from "@/components/app-shell";
 
 const initialProfile: CandidateProfile = {
   fullName: "",
@@ -70,11 +71,15 @@ export default function OnboardingPage() {
   };
 
   if (loading) {
-    return <main className="page">Loading...</main>;
+    return (
+      <AppShell>
+        <p className="muted">Loading…</p>
+      </AppShell>
+    );
   }
 
   return (
-    <main className="page">
+    <AppShell>
       <section className="workspace stack">
         <div>
           <h1>Set up your career profile</h1>
@@ -145,7 +150,7 @@ export default function OnboardingPage() {
           Finish onboarding
         </button>
       </section>
-    </main>
+    </AppShell>
   );
 }
 

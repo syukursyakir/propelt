@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { Resume } from "@propelt/shared";
 import { api } from "@/lib/api";
 import { useSession } from "@/lib/use-session";
+import { AppShell } from "@/components/app-shell";
 
 export default function ResumesPage() {
   const { loading } = useSession();
@@ -58,11 +59,15 @@ export default function ResumesPage() {
   };
 
   if (loading) {
-    return <main className="page">Loading...</main>;
+    return (
+      <AppShell>
+        <p className="muted">Loading…</p>
+      </AppShell>
+    );
   }
 
   return (
-    <main className="page">
+    <AppShell>
       <section className="workspace stack">
         <div className="topbar">
           <div>
@@ -115,6 +120,6 @@ export default function ResumesPage() {
           </div>
         </div>
       </section>
-    </main>
+    </AppShell>
   );
 }

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import type { ApplicationQuestions, Resume } from "@propelt/shared";
 import { api } from "@/lib/api";
 import { useSession } from "@/lib/use-session";
+import { AppShell } from "@/components/app-shell";
 
 const initialQuestions: ApplicationQuestions = {
   targetRoleOrIndustry: "",
@@ -60,11 +61,15 @@ export default function NewApplicationPage() {
   };
 
   if (loading) {
-    return <main className="page">Loading...</main>;
+    return (
+      <AppShell>
+        <p className="muted">Loading…</p>
+      </AppShell>
+    );
   }
 
   return (
-    <main className="page">
+    <AppShell>
       <section className="workspace stack">
         <div className="topbar">
           <div>
@@ -114,7 +119,7 @@ export default function NewApplicationPage() {
           {busy ? "Generating..." : "Generate tailored application"}
         </button>
       </section>
-    </main>
+    </AppShell>
   );
 }
 

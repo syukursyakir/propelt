@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Application, CandidateProfile, Resume } from "@propelt/shared";
 import { api } from "@/lib/api";
-import { supabase } from "@/lib/supabase";
 import { useSession } from "@/lib/use-session";
+import { AppShell } from "@/components/app-shell";
 
 const initialProfile: CandidateProfile = {
   fullName: "",
@@ -45,10 +45,6 @@ export default function DashboardPage() {
       );
     }
   }, [loading]);
-
-  const signOut = async () => {
-    await supabase.auth.signOut();
-  };
 
   const parseResume = async () => {
     setError("");
@@ -96,7 +92,11 @@ export default function DashboardPage() {
   };
 
   if (loading) {
-    return <main className="page">Loading...</main>;
+    return (
+      <AppShell>
+        <p className="muted">Loading workspace…</p>
+      </AppShell>
+    );
   }
 
   const isReturning = resumes.length > 0 || applications.length > 0;
@@ -109,41 +109,19 @@ export default function DashboardPage() {
     : "Start in one place: profile context, reusable resume, then the job description you want to apply for.";
 
   return (
-    <main className="app-shell">
-      <aside className="app-sidebar" aria-label="Workspace navigation">
-        <Link className="app-brand" href="/dashboard" aria-label="Propelt dashboard">
-          <span className="app-brand-mark" aria-hidden="true">P</span>
-          <span>Propelt</span>
+    <AppShell>
+      <div className="app-topbar">
+        <div className="app-topbar-copy">
+          <p className="eyebrow">{eyebrowLabel}</p>
+          <h1>{heading}</h1>
+          <p className="muted">{subhead}</p>
+        </div>
+        <Link className="button secondary" href="/applications/new">
+          New application
         </Link>
+      </div>
 
-        <nav className="app-nav" aria-label="Primary">
-          <Link className="app-nav-link active" href="/dashboard">Home</Link>
-          <Link className="app-nav-link" href="/resumes">Resumes</Link>
-          <Link className="app-nav-link" href="/applications/new">New application</Link>
-          <Link className="app-nav-link" href="/onboarding">Full onboarding</Link>
-        </nav>
-
-        <div className="app-sidebar-footer">
-          <p className="app-sidebar-meta">Signed in workspace</p>
-          <button className="button ghost app-signout" type="button" onClick={signOut}>
-            Sign out
-          </button>
-        </div>
-      </aside>
-
-      <section className="app-main">
-        <div className="app-topbar">
-          <div className="app-topbar-copy">
-            <p className="eyebrow">{eyebrowLabel}</p>
-            <h1>{heading}</h1>
-            <p className="muted">{subhead}</p>
-          </div>
-          <Link className="button secondary" href="/applications/new">
-            New application
-          </Link>
-        </div>
-
-        {error ? <div className="error">{error}</div> : null}
+      {error ? <div className="error">{error}</div> : null}
 
         <div className="dashboard-layout">
           <section className="onboarding-home stack" aria-label="Guided setup">
@@ -286,8 +264,7 @@ export default function DashboardPage() {
             </div>
           </aside>
         </div>
-      </section>
-    </main>
+    </AppShell>
   );
 }
 

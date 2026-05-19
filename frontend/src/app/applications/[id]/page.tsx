@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { Application, GeneratedResult } from "@propelt/shared";
 import { api } from "@/lib/api";
 import { useSession } from "@/lib/use-session";
+import { AppShell } from "@/components/app-shell";
 
 type TabKey = keyof GeneratedResult;
 
@@ -68,11 +69,15 @@ export default function ApplicationDetailPage() {
   };
 
   if (loading || !application) {
-    return <main className="page">{error || "Loading..."}</main>;
+    return (
+      <AppShell>
+        <p className="muted">{error || "Loading…"}</p>
+      </AppShell>
+    );
   }
 
   return (
-    <main className="page">
+    <AppShell>
       <section className="workspace stack">
         <div className="topbar">
           <div>
@@ -124,7 +129,7 @@ export default function ApplicationDetailPage() {
           </div>
         </div>
       </section>
-    </main>
+    </AppShell>
   );
 }
 

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 type IconKey = "home" | "resumes" | "newapp" | "user";
-type AnyIconName = IconKey | "chevron" | "signout";
+type AnyIconName = IconKey | "sidebar" | "signout";
 
 type NavItem = {
   href: string;
@@ -76,15 +76,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <span className="app-brand-mark" aria-hidden="true">P</span>
             <span className="app-nav-label app-brand-text">Propelt</span>
           </Link>
-          <button
-            type="button"
-            className="app-sidebar-toggle"
-            onClick={() => setCollapsed((value) => !value)}
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            aria-expanded={!collapsed}
-          >
-            <Icon name="chevron" />
-          </button>
         </div>
 
         <nav className="app-nav" aria-label="Primary">
@@ -106,10 +97,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
 
         <div className="app-sidebar-footer">
-          <p className="app-sidebar-meta app-nav-label">Signed in workspace</p>
           <button
             type="button"
-            className="button ghost app-signout"
+            className="app-nav-link app-nav-link--action"
+            onClick={() => setCollapsed((value) => !value)}
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-expanded={!collapsed}
+          >
+            <Icon name="sidebar" />
+            <span className="app-nav-label">
+              {collapsed ? "Expand" : "Collapse"}
+            </span>
+          </button>
+          <button
+            type="button"
+            className="app-nav-link app-nav-link--action app-signout"
             onClick={signOut}
             title={collapsed ? "Sign out" : undefined}
             aria-label="Sign out"
@@ -165,15 +168,11 @@ function Icon({ name }: { name: AnyIconName }) {
           <path d="M20 12H9" />
         </svg>
       );
-    case "chevron":
+    case "sidebar":
       return (
-        <svg
-          className="app-icon app-icon--chevron"
-          viewBox="0 0 24 24"
-          fill="none"
-          aria-hidden="true"
-        >
-          <polyline points="14 6 8 12 14 18" />
+        <svg className="app-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect x="3" y="5" width="18" height="14" rx="2" />
+          <line x1="9.5" y1="5" x2="9.5" y2="19" />
         </svg>
       );
   }

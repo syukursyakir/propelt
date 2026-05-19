@@ -2692,54 +2692,16 @@ a {
   padding: 22px 10px;
 }
 
-/* ---------- Sidebar head: brand + collapse toggle ---------- */
+/* ---------- Sidebar head: brand only ---------- */
 .app-sidebar-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
   padding: 4px 4px 4px 6px;
 }
 
 .app-shell--collapsed .app-sidebar-head {
-  flex-direction: column;
-  align-items: center;
+  justify-content: center;
   padding: 4px 0;
-  gap: 12px;
-}
-
-.app-sidebar-toggle {
-  flex: 0 0 auto;
-  display: inline-grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border: 1px solid var(--shell-border);
-  border-radius: 8px;
-  background: var(--shell-surface);
-  color: var(--shell-soft-ink);
-  cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease,
-    border-color 0.15s ease;
-}
-
-.app-sidebar-toggle:hover {
-  background: var(--shell-bg-soft);
-  color: var(--shell-ink);
-  border-color: var(--shell-border-strong);
-}
-
-.app-sidebar-toggle:focus-visible {
-  outline: 2px solid var(--shell-accent);
-  outline-offset: 2px;
-}
-
-.app-icon--chevron {
-  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-.app-shell--collapsed .app-icon--chevron {
-  transform: rotate(180deg);
 }
 
 /* ---------- Inline SVG icon base ---------- */
@@ -2757,10 +2719,6 @@ a {
 /* ---------- Label visibility (expanded vs collapsed) ---------- */
 .app-shell--collapsed .app-nav-label,
 .app-shell--collapsed .app-brand-text {
-  display: none;
-}
-
-.app-shell--collapsed .app-sidebar-meta {
   display: none;
 }
 
@@ -2892,48 +2850,20 @@ a {
   border-top: 1px solid var(--shell-border);
 }
 
-.app-sidebar-meta {
-  margin: 0;
-  color: var(--shell-muted-ink);
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.app-shell .app-signout {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  justify-self: start;
-  width: auto;
-  min-height: 36px;
-  padding: 0 12px;
-  border-radius: 7px;
-  color: var(--shell-soft-ink);
-  font-size: 0.88rem;
-  font-weight: 600;
-}
-
-.app-shell .app-signout > .app-icon {
-  color: var(--shell-muted-ink);
-}
-
-.app-shell .app-signout:hover {
-  background: var(--shell-bg-soft);
-  color: var(--shell-ink);
-}
-
-.app-shell .app-signout:hover > .app-icon {
-  color: var(--shell-ink);
-}
-
-.app-shell--collapsed .app-signout {
-  justify-self: center;
-  justify-content: center;
+/* Buttons styled as nav-links (Collapse + Sign out in the footer) */
+button.app-nav-link,
+.app-nav-link--action {
+  font: inherit;
   width: 100%;
-  padding: 0;
-  gap: 0;
+  text-align: left;
+  background: transparent;
+  cursor: pointer;
+}
+
+button.app-nav-link:focus-visible,
+.app-nav-link--action:focus-visible {
+  outline: 2px solid var(--shell-accent);
+  outline-offset: 2px;
 }
 
 /* ---------- Main ---------- */
@@ -3326,13 +3256,9 @@ a {
   .app-shell--collapsed .app-sidebar-head {
     flex-direction: row;
     align-items: center;
+    justify-content: flex-start;
     padding: 4px 4px 4px 6px;
     gap: 8px;
-  }
-
-  /* Hide the collapse toggle on mobile — sidebar is already compact. */
-  .app-sidebar-toggle {
-    display: none;
   }
 
   .app-nav {
@@ -3349,12 +3275,12 @@ a {
     text-align: center;
     padding: 8px 12px;
     gap: 8px;
+    width: auto;
   }
 
   /* Re-show labels on mobile even when stored state is collapsed. */
   .app-shell--collapsed .app-nav-label,
-  .app-shell--collapsed .app-brand-text,
-  .app-shell--collapsed .app-sidebar-meta {
+  .app-shell--collapsed .app-brand-text {
     display: inline;
   }
 
@@ -3370,20 +3296,9 @@ a {
   .app-sidebar-footer {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding-top: 10px;
-  }
-
-  .app-shell--collapsed .app-signout {
-    width: auto;
     justify-content: flex-start;
-    gap: 10px;
-    padding: 0 12px;
-  }
-
-  .app-sidebar-meta {
-    font-size: 0.72rem;
+    gap: 8px;
+    padding-top: 10px;
   }
 
   .app-main {

@@ -36,14 +36,14 @@ export default function AuthPage() {
       return;
     }
 
-    router.replace("/onboarding");
+    router.replace("/dashboard");
   };
 
   const handleGoogle = async () => {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/onboarding`,
+        redirectTo: `${window.location.origin}/dashboard`,
       },
     });
   };

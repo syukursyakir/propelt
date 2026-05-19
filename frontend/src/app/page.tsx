@@ -1,4 +1,24 @@
 import Link from "next/link";
+import { Newsreader, Inter } from "next/font/google";
+
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+  variable: "--font-newsreader",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
+// ============================================================
+//   DATA
+// ============================================================
 
 const stats = [
   { num: "06", label: "Application outputs", note: "Fit, keywords, summary, resume, reasoning, next steps" },
@@ -9,141 +29,85 @@ const stats = [
 ];
 
 const marqueeItems = [
-  "SQL",
-  "Stakeholder communication",
-  "Python",
-  "Dashboard reporting",
-  "Capstone projects",
-  "ETL pipelines",
-  "Hackathons",
-  "Tableau",
-  "Business impact",
-  "KPI tracking",
-  "Internships",
-  "CCA leadership",
-  "Coursework",
-  "Part-time work",
+  "SQL", "Stakeholder communication", "Python", "Dashboard reporting",
+  "Capstone projects", "ETL pipelines", "Hackathons", "Tableau",
+  "Business impact", "KPI tracking", "Internships", "CCA leadership",
+  "Coursework", "Part-time work",
 ];
 
-type FeatureKind =
-  | "evidence"
-  | "jdbreak"
-  | "fitgap"
-  | "ats"
-  | "rewrite"
-  | "explain";
+type StoryKind = "jd" | "resume" | "map" | "fitgap" | "rewrite" | "explain";
 
-const features: {
+const story: {
+  n: string;
+  side: "left" | "right";
   eyebrow: string;
   title: string;
   body: string;
-  kind: FeatureKind;
+  outputTag: string;
+  kind: StoryKind;
 }[] = [
   {
-    eyebrow: "Read the resume",
-    title: "Resume evidence mapping",
-    body: "Propelt reads your resume the way a recruiter would and pulls the projects, internships, and coursework most relevant to the target role.",
-    kind: "evidence",
+    n: "01",
+    side: "left",
+    eyebrow: "Step one",
+    title: "Read the role like a recruiter.",
+    body: "Propelt decomposes the job description into responsibilities, must-haves, and the exact language the employer uses — not a generic keyword dump.",
+    outputTag: "Job description breakdown",
+    kind: "jd",
   },
   {
-    eyebrow: "Read the role",
-    title: "Job description breakdown",
-    body: "Each role is decomposed into responsibilities, must-haves, and the keywords the employer actually uses.",
-    kind: "jdbreak",
+    n: "02",
+    side: "right",
+    eyebrow: "Step two",
+    title: "Pull evidence from your real resume.",
+    body: "Your projects, internships, coursework, and clubs become the source material. Nothing is added that you did not write.",
+    outputTag: "Resume evidence map",
+    kind: "resume",
   },
   {
-    eyebrow: "Compare",
-    title: "Fit and gap analysis",
-    body: "See where your evidence is strong, where it is lightly shown, and where there is a real gap worth addressing.",
+    n: "03",
+    side: "left",
+    eyebrow: "Step three",
+    title: "Map evidence to what the role wants.",
+    body: "Each role signal is connected to the strongest matching piece of your background — and where nothing matches, the gap is named.",
+    outputTag: "Evidence-to-requirement mapping",
+    kind: "map",
+  },
+  {
+    n: "04",
+    side: "right",
+    eyebrow: "Step four",
+    title: "See fit and gaps before you rewrite.",
+    body: "Strong, light, and missing — clearly marked. You know what is worth keeping and what needs work before you change a single bullet.",
+    outputTag: "Fit & gap analysis",
     kind: "fitgap",
   },
   {
-    eyebrow: "Align",
-    title: "ATS keyword alignment",
-    body: "Every requirement is matched against your resume with a clear status, so nothing important is silently dropped.",
-    kind: "ats",
-  },
-  {
-    eyebrow: "Rewrite",
-    title: "Tailored resume rewrite",
-    body: "Your bullets are reordered and rewritten around the role — focused on the evidence that actually fits.",
+    n: "05",
+    side: "left",
+    eyebrow: "Step five",
+    title: "Rewrite around the role, not around yourself.",
+    body: "Each bullet is reordered and rewritten to lead with the evidence the job actually values — quantified where the source allows.",
+    outputTag: "Tailored resume",
     kind: "rewrite",
   },
   {
-    eyebrow: "Improve",
-    title: "Explanation & next steps",
-    body: "Every change comes with a short note on why, plus specific gaps to address before you apply.",
+    n: "06",
+    side: "right",
+    eyebrow: "Step six",
+    title: "Leave with reasoning and next steps.",
+    body: "Every change comes with a short note on why. Every gap comes with a concrete fix to consider before you apply.",
+    outputTag: "Explanation & improvement",
     kind: "explain",
   },
 ];
 
 const workflowSteps = [
-  {
-    n: "01",
-    title: "Add your resume",
-    body: "PDF, DOCX, or paste plain text. Save it once and reuse across roles.",
-  },
-  {
-    n: "02",
-    title: "Paste the job description",
-    body: "Propelt reads it like a recruiter — responsibilities, must-haves, and language cues.",
-  },
-  {
-    n: "03",
-    title: "Answer guided questions",
-    body: "Five short prompts surface context the resume cannot show on its own.",
-  },
-  {
-    n: "04",
-    title: "Review fit and gaps",
-    body: "Strong, light, missing — clearly marked before you change a single bullet.",
-  },
-  {
-    n: "05",
-    title: "Copy a tailored application",
-    body: "Take a rewritten resume, a role-specific summary, and a clear set of next steps.",
-  },
-];
-
-type OutputKind =
-  | "fit"
-  | "ats"
-  | "summary"
-  | "resume"
-  | "explain"
-  | "improve";
-
-const outputs: { title: string; desc: string; kind: OutputKind }[] = [
-  {
-    title: "Candidate fit analysis",
-    desc: "Where your background is strong, where it is light, and which parts of the role to organise the application around.",
-    kind: "fit",
-  },
-  {
-    title: "ATS keyword alignment",
-    desc: "Each requirement marked as shown, lightly shown, or missing — alongside the exact phrasing from the role.",
-    kind: "ats",
-  },
-  {
-    title: "Tailored professional summary",
-    desc: "A concise opening paragraph rewritten around the role, in language a recruiter for that position recognises.",
-    kind: "summary",
-  },
-  {
-    title: "Tailored resume",
-    desc: "Your bullets reordered and rewritten to lead with the evidence the job actually values — without invention.",
-    kind: "resume",
-  },
-  {
-    title: "Explanation of changes",
-    desc: "Every rewritten bullet comes with a short note on what changed and why, so you can keep or revise with intent.",
-    kind: "explain",
-  },
-  {
-    title: "Improvement suggestions",
-    desc: "Specific gaps to address before applying — a project to mention, a skill to learn, an answer to prepare.",
-    kind: "improve",
-  },
+  { n: "01", title: "Add your resume", body: "PDF, DOCX, or paste plain text. Save it once and reuse across roles." },
+  { n: "02", title: "Paste the job description", body: "Propelt reads it like a recruiter — responsibilities and language cues." },
+  { n: "03", title: "Answer guided questions", body: "Five short prompts surface context the resume cannot show on its own." },
+  { n: "04", title: "Review fit and gaps", body: "Strong, light, missing — clearly marked before you change a bullet." },
+  { n: "05", title: "Copy a tailored draft", body: "Take a rewritten resume, a summary, and a clear set of next steps." },
 ];
 
 const principles = [
@@ -155,7 +119,7 @@ const principles = [
   {
     glyph: "G",
     title: "Gaps are shown, not hidden",
-    desc: "Missing skills and weak evidence are flagged honestly, so you can decide what to address before applying — not papered over with confident filler.",
+    desc: "Missing skills and weak evidence are flagged honestly so you can decide what to address before applying — not papered over with confident filler.",
   },
   {
     glyph: "C",
@@ -177,85 +141,115 @@ const audiences = [
   "Junior role applicants",
 ];
 
-// ---------- Feature mini-previews ----------
+// ============================================================
+//   STORY MINI-PREVIEWS
+// ============================================================
 
-function FeaturePreview({ kind }: { kind: FeatureKind }) {
+function StoryPreview({ kind }: { kind: StoryKind }) {
   switch (kind) {
-    case "evidence":
+    case "jd":
       return (
-        <div className="lp-fp lp-fp--evidence" aria-hidden="true">
-          {[
-            ["DSA1101 coursework", "Analytical evidence"],
-            ["NUS Fintech capstone", "Stakeholder evidence"],
-            ["DataKind hackathon", "Python evidence"],
-          ].map(([from, to]) => (
-            <div className="lp-fp-evrow" key={from}>
-              <span className="lp-fp-from">{from}</span>
-              <span className="lp-fp-arrow" aria-hidden="true">→</span>
-              <span className="lp-fp-to">{to}</span>
+        <div className="lp-sp lp-sp--jd" aria-hidden="true">
+          <div className="lp-sp-doc">
+            <span className="lp-sp-doc-tab">Job description</span>
+            <p>
+              We are looking for a candidate with <mark>SQL</mark> expertise,
+              strong <mark>stakeholder communication</mark>, and the ability
+              to <mark>translate business problems</mark> into clear analysis.
+              Familiarity with <mark>Python</mark> for automation is a plus.
+            </p>
+          </div>
+          <div className="lp-sp-chips">
+            <span className="lp-chip">SQL</span>
+            <span className="lp-chip">Stakeholder</span>
+            <span className="lp-chip">Business framing</span>
+            <span className="lp-chip">Python</span>
+          </div>
+        </div>
+      );
+
+    case "resume":
+      return (
+        <div className="lp-sp lp-sp--resume" aria-hidden="true">
+          <div className="lp-sp-doc">
+            <span className="lp-sp-doc-tab">Your resume</span>
+            <ul className="lp-sp-resume-list">
+              <li><span className="lp-dot" />DSA1101 — Intro to Data Analytics</li>
+              <li><span className="lp-dot" />NUS Fintech Capstone (client briefing)</li>
+              <li><span className="lp-dot" />Marketing Analytics Internship</li>
+              <li><span className="lp-dot" />Data Society CCA, lead 2024</li>
+              <li><span className="lp-dot" />Tableau coursework + hackathon</li>
+            </ul>
+          </div>
+        </div>
+      );
+
+    case "map": {
+      const mapRows: { from: string; to: string; miss?: boolean }[] = [
+        { from: "DSA1101 coursework", to: "SQL reporting" },
+        { from: "Capstone briefing", to: "Stakeholder communication" },
+        { from: "Fintech project", to: "Business framing" },
+        { from: "—  Not in resume", to: "Python automation", miss: true },
+      ];
+      return (
+        <div className="lp-sp lp-sp--map" aria-hidden="true">
+          {mapRows.map((row, i) => (
+            <div
+              className={`lp-sp-mrow${row.miss ? " lp-sp-mrow--miss" : ""}`}
+              key={row.from}
+              style={{ "--lp-stagger": `${i * 0.08}s` } as React.CSSProperties}
+            >
+              <span className="lp-sp-mfrom">{row.from}</span>
+              <span className="lp-sp-marrow" aria-hidden="true">
+                <span className="lp-sp-marrow-line" />
+                <span className="lp-sp-marrow-tip">→</span>
+              </span>
+              <span className="lp-sp-mto">{row.to}</span>
             </div>
           ))}
         </div>
       );
-
-    case "jdbreak":
-      return (
-        <p className="lp-fp lp-fp--jd" aria-hidden="true">
-          We are looking for a candidate with <mark>SQL</mark> expertise,
-          strong <mark>stakeholder communication</mark>, and the ability to
-          <mark>translate business problems</mark> into clear analysis.
-        </p>
-      );
+    }
 
     case "fitgap":
       return (
-        <div className="lp-fp lp-fp--bars" aria-hidden="true">
+        <div className="lp-sp lp-sp--bars" aria-hidden="true">
           {[
-            { label: "Quantitative", v: 82 },
-            { label: "Stakeholder", v: 60 },
-            { label: "Industry", v: 30 },
+            { label: "Quantitative", v: 82, tag: "strong" },
+            { label: "Stakeholder", v: 60, tag: "light" },
+            { label: "Python automation", v: 22, tag: "missing" },
+            { label: "Cloud familiarity", v: 10, tag: "missing" },
           ].map((b) => (
-            <div className="lp-fp-barrow" key={b.label}>
-              <span className="lp-fp-barlabel">{b.label}</span>
+            <div className="lp-sp-barrow" key={b.label}>
+              <span className="lp-sp-barlabel">{b.label}</span>
               <div className="lp-bar">
-                <div className="lp-bar-fill" style={{ width: `${b.v}%` }} />
+                <div
+                  className={`lp-bar-fill lp-bar-fill--${b.tag}`}
+                  style={{ width: `${b.v}%` }}
+                />
               </div>
-              <span className="lp-fp-barval">{b.v}</span>
+              <span className={`lp-st lp-st--${b.tag}`}>
+                {b.tag === "strong" ? "Strong" : b.tag === "light" ? "Light" : "Missing"}
+              </span>
             </div>
-          ))}
-        </div>
-      );
-
-    case "ats":
-      return (
-        <div className="lp-fp lp-fp--ats" aria-hidden="true">
-          {[
-            ["SQL", "strong"],
-            ["Tableau", "strong"],
-            ["Stakeholder", "light"],
-            ["Cloud", "missing"],
-            ["Python", "strong"],
-            ["KPI", "light"],
-          ].map(([word, s]) => (
-            <span className={`lp-kw lp-kw--${s}`} key={word}>
-              {word}
-            </span>
           ))}
         </div>
       );
 
     case "rewrite":
       return (
-        <div className="lp-fp lp-fp--rewrite" aria-hidden="true">
-          <div className="lp-fp-rewrow">
+        <div className="lp-sp lp-sp--rewrite" aria-hidden="true">
+          <div className="lp-sp-rewrow">
             <span className="lp-bal lp-bal--before">Before</span>
-            <p>School project analysing student data.</p>
+            <p>School project analysing student engagement data.</p>
           </div>
-          <div className="lp-fp-rewrow">
+          <div className="lp-sp-rewarrow" aria-hidden="true">↓</div>
+          <div className="lp-sp-rewrow lp-sp-rewrow--after">
             <span className="lp-bal lp-bal--after">After</span>
             <p>
-              Cleaned 18k rows in SQL and Python; surfaced three retention
-              drivers used in the faculty review report.
+              Cleaned and analysed 18,000 rows of campus engagement data in
+              SQL and Python; surfaced three retention drivers used in the
+              faculty review report.
             </p>
           </div>
         </div>
@@ -263,85 +257,208 @@ function FeaturePreview({ kind }: { kind: FeatureKind }) {
 
     case "explain":
       return (
-        <ul className="lp-fp lp-fp--explain" aria-hidden="true">
+        <ul className="lp-sp lp-sp--explain" aria-hidden="true">
           <li>
             <span className="lp-fp-mark lp-fp-mark--why">Why</span>
-            Led with the project that matches &ldquo;stakeholder reporting&rdquo; most directly.
+            <div>
+              <strong>Promoted capstone to top of resume</strong>
+              <p>Closest match to &ldquo;stakeholder reporting&rdquo;.</p>
+            </div>
           </li>
           <li>
             <span className="lp-fp-mark lp-fp-mark--fix">Fix</span>
-            Mention a cloud platform (AWS, GCP) before applying.
+            <div>
+              <strong>Add a cloud platform example</strong>
+              <p>Even a small AWS / GCP project closes the gap.</p>
+            </div>
           </li>
         </ul>
       );
   }
 }
 
-// ---------- Output card mini-previews ----------
+// ============================================================
+//   OUTPUT TAB PANELS (CSS-only tabs via radio inputs)
+// ============================================================
 
-function OutputPreview({ kind }: { kind: OutputKind }) {
-  switch (kind) {
-    case "fit":
-      return (
-        <div className="lp-op lp-op--fit" aria-hidden="true">
-          <div className="lp-op-fit-meta">
-            <span className="lp-microlabel">Fit score</span>
-            <strong>76<span className="lp-op-fit-of">/100</span></strong>
+function OutputTabsPanels() {
+  return (
+    <>
+      {/* Tab 1: Fit analysis */}
+      <div className="lp-tab-panel" data-tab="1">
+        <div className="lp-tabp">
+          <div className="lp-tabp-head">
+            <div>
+              <span className="lp-eyebrow">Fit analysis</span>
+              <h4>Quantitative-leaning candidate with project evidence</h4>
+            </div>
+            <div className="lp-tabp-score">
+              <strong>76</strong><span>/100</span>
+            </div>
           </div>
-          <div className="lp-bar"><div className="lp-bar-fill" style={{ width: "76%" }} /></div>
+          <div className="lp-fitbar lp-fitbar--tab"><div className="lp-fitbar-fill" /></div>
+          <div className="lp-tabp-grid">
+            <div className="lp-tabp-col">
+              <span className="lp-microlabel">Strong</span>
+              <ul>
+                <li>SQL coursework + dashboard projects</li>
+                <li>Capstone client briefing</li>
+              </ul>
+            </div>
+            <div className="lp-tabp-col">
+              <span className="lp-microlabel">Light</span>
+              <ul>
+                <li>Business framing — implied only</li>
+                <li>Stakeholder language</li>
+              </ul>
+            </div>
+            <div className="lp-tabp-col">
+              <span className="lp-microlabel">Missing</span>
+              <ul>
+                <li>Python automation</li>
+                <li>Cloud familiarity</li>
+              </ul>
+            </div>
+          </div>
         </div>
-      );
+      </div>
 
-    case "ats":
-      return (
-        <div className="lp-op lp-op--ats" aria-hidden="true">
-          <span className="lp-kw lp-kw--strong">SQL</span>
-          <span className="lp-kw lp-kw--strong">Stakeholder</span>
-          <span className="lp-kw lp-kw--light">Python</span>
-          <span className="lp-kw lp-kw--missing">Cloud</span>
+      {/* Tab 2: Keyword alignment */}
+      <div className="lp-tab-panel" data-tab="2">
+        <div className="lp-tabp">
+          <div className="lp-tabp-head">
+            <div>
+              <span className="lp-eyebrow">ATS keyword alignment</span>
+              <h4>Ten role requirements matched against your resume</h4>
+            </div>
+          </div>
+          <div className="lp-tabp-kw">
+            <span className="lp-kw lp-kw--strong">SQL</span>
+            <span className="lp-kw lp-kw--strong">Dashboards</span>
+            <span className="lp-kw lp-kw--strong">Stakeholder communication</span>
+            <span className="lp-kw lp-kw--strong">KPIs</span>
+            <span className="lp-kw lp-kw--strong">Capstone analytics</span>
+            <span className="lp-kw lp-kw--light">Business problem framing</span>
+            <span className="lp-kw lp-kw--light">Excel modelling</span>
+            <span className="lp-kw lp-kw--missing">Python automation</span>
+            <span className="lp-kw lp-kw--missing">Cloud platforms</span>
+            <span className="lp-kw lp-kw--missing">A/B testing</span>
+          </div>
         </div>
-      );
+      </div>
 
-    case "summary":
-      return (
-        <p className="lp-op lp-op--summary" aria-hidden="true">
-          Final-year statistics student with project experience in SQL,
-          dashboard reporting, and stakeholder communication — applying for
-          data analyst roles in financial services.
-        </p>
-      );
+      {/* Tab 3: Tailored summary */}
+      <div className="lp-tab-panel" data-tab="3">
+        <div className="lp-tabp lp-tabp--doc">
+          <span className="lp-sp-doc-tab">Professional summary · Tailored</span>
+          <p className="lp-doc-body">
+            Final-year statistics undergraduate with project experience in
+            SQL, dashboard reporting, and stakeholder communication. Applying
+            for data analyst internships in financial services, with focus on
+            campus analytics, retention modelling, and capstone client work.
+          </p>
+          <div className="lp-doc-foot">
+            <span className="lp-eyebrow">Rewritten for</span>
+            <strong>Data Analyst Intern — DBS</strong>
+          </div>
+        </div>
+      </div>
 
-    case "resume":
-      return (
-        <ul className="lp-op lp-op--resume" aria-hidden="true">
-          <li>Built a Python ETL pipeline over 18k engagement records.</li>
-          <li>Presented retention findings to a 6-person faculty panel.</li>
-        </ul>
-      );
+      {/* Tab 4: Tailored resume */}
+      <div className="lp-tab-panel" data-tab="4">
+        <div className="lp-tabp lp-tabp--doc">
+          <span className="lp-sp-doc-tab">NUS Fintech Capstone · Promoted</span>
+          <ul className="lp-doc-list">
+            <li>
+              Built a Python ETL pipeline over 18,000 engagement records,
+              surfacing three retention drivers used in the final report.
+            </li>
+            <li>
+              Presented findings to a 6-person faculty review panel and
+              translated quantitative results into a one-page brief.
+            </li>
+            <li>
+              Designed and shipped a Tableau dashboard tracking 11 KPIs
+              across the academic year.
+            </li>
+          </ul>
+        </div>
+      </div>
 
-    case "explain":
-      return (
-        <ul className="lp-op lp-op--explain" aria-hidden="true">
-          <li><span className="lp-fp-mark lp-fp-mark--why">Why</span>Promoted because it shows analytical impact.</li>
-          <li><span className="lp-fp-mark lp-fp-mark--why">Why</span>Quantified to match the role&apos;s metrics.</li>
-        </ul>
-      );
+      {/* Tab 5: Explanation */}
+      <div className="lp-tab-panel" data-tab="5">
+        <div className="lp-tabp">
+          <div className="lp-tabp-head">
+            <span className="lp-eyebrow">Explanation of changes</span>
+          </div>
+          <ul className="lp-tabp-explain">
+            <li>
+              <span className="lp-fp-mark lp-fp-mark--why">Why</span>
+              <div>
+                <strong>Promoted capstone to top of resume</strong>
+                <p>Maps directly to the role&apos;s &ldquo;stakeholder reporting&rdquo; requirement and shows quantitative impact.</p>
+              </div>
+            </li>
+            <li>
+              <span className="lp-fp-mark lp-fp-mark--why">Why</span>
+              <div>
+                <strong>Quantified the dashboard work (11 KPIs)</strong>
+                <p>The role description emphasises measurable outcomes; specific numbers signal that fit.</p>
+              </div>
+            </li>
+            <li>
+              <span className="lp-fp-mark lp-fp-mark--why">Why</span>
+              <div>
+                <strong>Cut unrelated CCA filler</strong>
+                <p>Two lines removed — they did not connect to analytical or stakeholder work.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
 
-    case "improve":
-      return (
-        <ul className="lp-op lp-op--explain" aria-hidden="true">
-          <li><span className="lp-fp-mark lp-fp-mark--fix">Fix</span>Add a cloud platform example.</li>
-          <li><span className="lp-fp-mark lp-fp-mark--fix">Fix</span>Prepare a SQL-to-Tableau answer.</li>
-        </ul>
-      );
-  }
+      {/* Tab 6: Improvement suggestions */}
+      <div className="lp-tab-panel" data-tab="6">
+        <div className="lp-tabp">
+          <div className="lp-tabp-head">
+            <span className="lp-eyebrow">Improvement suggestions</span>
+          </div>
+          <ul className="lp-tabp-explain">
+            <li>
+              <span className="lp-fp-mark lp-fp-mark--fix">Fix</span>
+              <div>
+                <strong>Add a cloud-platform example</strong>
+                <p>Even a small AWS / GCP / Azure project mention closes the only outright Missing requirement.</p>
+              </div>
+            </li>
+            <li>
+              <span className="lp-fp-mark lp-fp-mark--fix">Fix</span>
+              <div>
+                <strong>Prepare a Python-to-SQL interview answer</strong>
+                <p>You have both, but they currently live in different sections of the resume.</p>
+              </div>
+            </li>
+            <li>
+              <span className="lp-fp-mark lp-fp-mark--fix">Fix</span>
+              <div>
+                <strong>Quantify the marketing internship</strong>
+                <p>The role values measurable outcomes — even a directional number helps.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </>
+  );
 }
 
-// ---------- Page ----------
+// ============================================================
+//   PAGE
+// ============================================================
 
 export default function Home() {
   return (
-    <main className="lp">
+    <main className={`${newsreader.variable} ${inter.variable} lp`}>
       <header className="lp-header" aria-label="Site header">
         <div className="lp-header-inner">
           <Link className="lp-brand" href="/" aria-label="Propelt home">
@@ -357,7 +474,8 @@ export default function Home() {
           <div className="lp-header-actions">
             <Link className="lp-textlink" href="/auth">Log in</Link>
             <Link className="lp-btn lp-btn--primary lp-btn--compact" href="/auth">
-              Start your application
+              Start application
+              <span className="lp-btn-arrow" aria-hidden="true">→</span>
             </Link>
           </div>
         </div>
@@ -372,7 +490,8 @@ export default function Home() {
               For students &amp; fresh graduates in Singapore
             </p>
             <h1 className="lp-h1">
-              Stop guessing what to put in your job application.
+              Stop guessing what to put in
+              <span className="lp-h1-accent"> your job application.</span>
             </h1>
             <p className="lp-lead">
               Propelt reads the job description, reads your resume, and builds
@@ -382,6 +501,7 @@ export default function Home() {
             <div className="lp-cta-row">
               <Link className="lp-btn lp-btn--primary" href="/auth">
                 Start your first application
+                <span className="lp-btn-arrow" aria-hidden="true">→</span>
               </Link>
               <a className="lp-btn lp-btn--ghost" href="#product">
                 See a sample review
@@ -450,9 +570,9 @@ export default function Home() {
                 <div className="lp-ba-row">
                   <span className="lp-bal lp-bal--after">After</span>
                   <p>
-                    Cleaned and analysed 18,000 rows of campus engagement data
-                    using SQL and Python; surfaced three retention drivers and
-                    presented findings to a faculty review panel.
+                    Cleaned and analysed 18,000 rows of campus engagement
+                    data in SQL and Python; surfaced three retention drivers
+                    and presented findings to a faculty review panel.
                   </p>
                 </div>
               </div>
@@ -488,45 +608,54 @@ export default function Home() {
       <div className="lp-marquee" aria-hidden="true">
         <div className="lp-marquee-track">
           {[...marqueeItems, ...marqueeItems].map((item, i) => (
-            <span className="lp-marquee-item" key={i}>
-              {item}
-            </span>
+            <span className="lp-marquee-item" key={i}>{item}</span>
           ))}
         </div>
       </div>
 
-      {/* ============ FEATURES ============ */}
-      <section className="lp-section lp-features">
+      {/* ============ STORY ============ */}
+      <section className="lp-section lp-story-section" id="product">
         <div className="lp-section-inner">
           <div className="lp-section-heading">
             <p className="lp-kicker">Inside the workspace</p>
             <h2 className="lp-h2">
-              Six things Propelt does for every application.
+              Six pieces of thinking,<br />
+              between a job description and your draft.
             </h2>
             <p className="lp-section-sub">
-              Each one is a small, concrete piece of thinking — the kind a
-              good mentor would do with you, in writing, before you apply.
+              Each step is concrete — the kind of thinking a good mentor would
+              do with you, in writing, before you apply.
             </p>
           </div>
-          <div className="lp-features-grid">
-            {features.map((f) => (
-              <article className="lp-feat" key={f.title}>
-                <div className="lp-feat-preview">
-                  <FeaturePreview kind={f.kind} />
+
+          <ol className="lp-story">
+            {story.map((s) => (
+              <li
+                className={`lp-story-step lp-story-step--${s.side}`}
+                key={s.n}
+              >
+                <div className="lp-story-node">
+                  <span className="lp-story-num">{s.n}</span>
                 </div>
-                <div className="lp-feat-body">
-                  <span className="lp-eyebrow">{f.eyebrow}</span>
-                  <h3>{f.title}</h3>
-                  <p>{f.body}</p>
+                <div className="lp-story-copy">
+                  <span className="lp-eyebrow">{s.eyebrow}</span>
+                  <h3>{s.title}</h3>
+                  <p>{s.body}</p>
+                  <span className="lp-story-tag">{s.outputTag}</span>
                 </div>
-              </article>
+                <div className="lp-story-preview">
+                  <div className="lp-story-preview-card">
+                    <StoryPreview kind={s.kind} />
+                  </div>
+                </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
-      {/* ============ PRODUCT DEMO ============ */}
-      <section className="lp-section lp-demo" id="product">
+      {/* ============ DEMO ============ */}
+      <section className="lp-section lp-demo">
         <div className="lp-section-inner">
           <div className="lp-section-heading">
             <p className="lp-kicker">A sample review</p>
@@ -534,9 +663,8 @@ export default function Home() {
               Job in, resume in, structured thinking out.
             </h2>
             <p className="lp-section-sub">
-              Below is a slice of what Propelt produces for a real role — the
-              same three columns appear inside the workspace as you build each
-              application.
+              The same three columns appear inside the workspace as you build
+              each application.
             </p>
           </div>
 
@@ -599,11 +727,9 @@ export default function Home() {
       <section className="lp-section lp-process" id="process">
         <div className="lp-section-inner">
           <div className="lp-section-heading">
-            <p className="lp-kicker">How it works</p>
+            <p className="lp-kicker">How you use it</p>
             <h2 className="lp-h2">Five steps from blank page to tailored draft.</h2>
-            <p className="lp-section-sub">
-              A guided workspace — not a blank resume editor.
-            </p>
+            <p className="lp-section-sub">A guided workspace — not a blank resume editor.</p>
           </div>
           <ol className="lp-flow">
             {workflowSteps.map((s, i) => (
@@ -622,27 +748,38 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ============ OUTPUTS ============ */}
+      {/* ============ OUTPUT TABS ============ */}
       <section className="lp-section lp-outputs" id="output">
         <div className="lp-section-inner">
           <div className="lp-section-heading">
             <p className="lp-kicker">What you receive</p>
-            <h2 className="lp-h2">Six concrete outputs for one target role.</h2>
+            <h2 className="lp-h2">Six concrete outputs. One target role.</h2>
             <p className="lp-section-sub">
-              Each output is structured for review. Read it, revise it, then
-              copy it straight into your application.
+              Switch between them — read, revise, then copy each one straight
+              into your application.
             </p>
           </div>
-          <div className="lp-outputs-grid">
-            {outputs.map((o) => (
-              <article className="lp-out" key={o.title}>
-                <div className="lp-out-preview">
-                  <OutputPreview kind={o.kind} />
-                </div>
-                <h3>{o.title}</h3>
-                <p>{o.desc}</p>
-              </article>
-            ))}
+
+          <div className="lp-tabs">
+            <input type="radio" name="lp-output-tab" id="lp-ot-1" defaultChecked aria-label="Fit analysis" />
+            <input type="radio" name="lp-output-tab" id="lp-ot-2" aria-label="Keyword alignment" />
+            <input type="radio" name="lp-output-tab" id="lp-ot-3" aria-label="Tailored summary" />
+            <input type="radio" name="lp-output-tab" id="lp-ot-4" aria-label="Tailored resume" />
+            <input type="radio" name="lp-output-tab" id="lp-ot-5" aria-label="Explanation" />
+            <input type="radio" name="lp-output-tab" id="lp-ot-6" aria-label="Improvement" />
+
+            <div className="lp-tabs-labels" role="tablist">
+              <label htmlFor="lp-ot-1"><span className="lp-tabs-n">01</span>Fit analysis</label>
+              <label htmlFor="lp-ot-2"><span className="lp-tabs-n">02</span>Keywords</label>
+              <label htmlFor="lp-ot-3"><span className="lp-tabs-n">03</span>Summary</label>
+              <label htmlFor="lp-ot-4"><span className="lp-tabs-n">04</span>Resume</label>
+              <label htmlFor="lp-ot-5"><span className="lp-tabs-n">05</span>Explanation</label>
+              <label htmlFor="lp-ot-6"><span className="lp-tabs-n">06</span>Improvement</label>
+            </div>
+
+            <div className="lp-tabs-panels">
+              <OutputTabsPanels />
+            </div>
           </div>
         </div>
       </section>
@@ -676,6 +813,7 @@ export default function Home() {
 
       {/* ============ FINAL CTA ============ */}
       <section className="lp-final">
+        <div className="lp-final-glow" aria-hidden="true" />
         <div className="lp-final-inner">
           <div>
             <p className="lp-kicker lp-kicker--light">
@@ -693,6 +831,7 @@ export default function Home() {
           </div>
           <Link className="lp-btn lp-btn--light lp-btn--large" href="/auth">
             Build my first application
+            <span className="lp-btn-arrow" aria-hidden="true">→</span>
           </Link>
         </div>
       </section>

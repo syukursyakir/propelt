@@ -1,9 +1,25 @@
 import type { Metadata } from "next";
+import { Newsreader, Inter } from "next/font/google";
 import "./globals.css";
+
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+  variable: "--font-newsreader",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-inter",
+});
 
 export const metadata: Metadata = {
   title: "Propelt",
-  description: "AI resume and graduate job application assistant",
+  description: "A guided job application workspace for students, fresh graduates, and early-career candidates.",
 };
 
 export default function RootLayout({
@@ -12,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${newsreader.variable} ${inter.variable}`}>
       <body>{children}</body>
     </html>
   );

@@ -1,20 +1,4 @@
 import Link from "next/link";
-import { Newsreader, Inter } from "next/font/google";
-
-const newsreader = Newsreader({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  style: ["normal", "italic"],
-  display: "swap",
-  variable: "--font-newsreader",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  variable: "--font-inter",
-});
 
 // ============================================================
 //   DATA
@@ -174,8 +158,8 @@ function StoryPreview({ kind }: { kind: StoryKind }) {
           <div className="lp-sp-doc">
             <span className="lp-sp-doc-tab">Your resume</span>
             <ul className="lp-sp-resume-list">
-              <li><span className="lp-dot" />DSA1101 — Intro to Data Analytics</li>
-              <li><span className="lp-dot" />NUS Fintech Capstone (client briefing)</li>
+              <li><span className="lp-dot" />Statistics &amp; Data Analytics module</li>
+              <li><span className="lp-dot" />University Fintech Capstone (client briefing)</li>
               <li><span className="lp-dot" />Marketing Analytics Internship</li>
               <li><span className="lp-dot" />Data Society CCA, lead 2024</li>
               <li><span className="lp-dot" />Tableau coursework + hackathon</li>
@@ -186,7 +170,7 @@ function StoryPreview({ kind }: { kind: StoryKind }) {
 
     case "map": {
       const mapRows: { from: string; to: string; miss?: boolean }[] = [
-        { from: "DSA1101 coursework", to: "SQL reporting" },
+        { from: "Statistics coursework", to: "SQL reporting" },
         { from: "Capstone briefing", to: "Stakeholder communication" },
         { from: "Fintech project", to: "Business framing" },
         { from: "—  Not in resume", to: "Python automation", miss: true },
@@ -359,7 +343,8 @@ function OutputTabsPanels() {
           </p>
           <div className="lp-doc-foot">
             <span className="lp-eyebrow">Rewritten for</span>
-            <strong>Data Analyst Intern — DBS</strong>
+            <strong>Data Analyst Intern</strong>
+            <span className="lp-sample" title="Illustrative sample data">Sample</span>
           </div>
         </div>
       </div>
@@ -458,7 +443,7 @@ function OutputTabsPanels() {
 
 export default function Home() {
   return (
-    <main className={`${newsreader.variable} ${inter.variable} lp`}>
+    <main className="lp">
       <header className="lp-header" aria-label="Site header">
         <div className="lp-header-inner">
           <Link className="lp-brand" href="/" aria-label="Propelt home">
@@ -487,7 +472,7 @@ export default function Home() {
           <div className="lp-hero-copy">
             <p className="lp-kicker">
               <span className="lp-kicker-dot" aria-hidden="true" />
-              For students &amp; fresh graduates in Singapore
+              For students &amp; fresh graduates · Built in Singapore
             </p>
             <h1 className="lp-h1">
               Stop guessing what to put in
@@ -514,10 +499,13 @@ export default function Home() {
             </ul>
           </div>
 
-          <aside className="lp-preview" aria-label="Sample application review">
+          <aside className="lp-preview" aria-label="Illustrative sample application review">
             <div className="lp-preview-toolbar">
               <span className="lp-eyebrow">Application review</span>
-              <span className="lp-preview-role">Data Analyst Intern · DBS</span>
+              <span className="lp-preview-meta">
+                <span className="lp-preview-role">Data Analyst Intern</span>
+                <span className="lp-sample" title="Illustrative sample data — not a real candidate">Sample</span>
+              </span>
             </div>
 
             <div className="lp-preview-fit">
@@ -552,9 +540,9 @@ export default function Home() {
               <div className="lp-preview-col">
                 <span className="lp-microlabel">Your resume shows</span>
                 <ul className="lp-preview-list lp-preview-list--status">
-                  <li><span className="lp-st lp-st--strong">Strong</span><span>DSA1101 + SQL coursework</span></li>
+                  <li><span className="lp-st lp-st--strong">Strong</span><span>Statistics + SQL coursework</span></li>
                   <li><span className="lp-st lp-st--strong">Strong</span><span>Capstone client briefing</span></li>
-                  <li><span className="lp-st lp-st--light">Light</span><span>Implied in NUS Fintech project</span></li>
+                  <li><span className="lp-st lp-st--light">Light</span><span>Implied in fintech project</span></li>
                   <li><span className="lp-st lp-st--missing">Missing</span><span>No Python evidence yet</span></li>
                 </ul>
               </div>
@@ -670,9 +658,12 @@ export default function Home() {
 
           <div className="lp-demo-frame">
             <div className="lp-demo-header">
-              <div>
+              <div className="lp-demo-role-wrap">
                 <span className="lp-eyebrow">Role</span>
-                <h3 className="lp-demo-role">Data Analyst Intern — DBS</h3>
+                <h3 className="lp-demo-role">
+                  Data Analyst Intern
+                  <span className="lp-sample" title="Illustrative sample data">Sample</span>
+                </h3>
               </div>
               <div className="lp-demo-fit">
                 <div className="lp-demo-fit-meta">
@@ -756,19 +747,20 @@ export default function Home() {
             <h2 className="lp-h2">Six concrete outputs. One target role.</h2>
             <p className="lp-section-sub">
               Switch between them — read, revise, then copy each one straight
-              into your application.
+              into your application. <span className="lp-section-note">All previews below use sample data.</span>
             </p>
           </div>
 
-          <div className="lp-tabs">
-            <input type="radio" name="lp-output-tab" id="lp-ot-1" defaultChecked aria-label="Fit analysis" />
-            <input type="radio" name="lp-output-tab" id="lp-ot-2" aria-label="Keyword alignment" />
-            <input type="radio" name="lp-output-tab" id="lp-ot-3" aria-label="Tailored summary" />
-            <input type="radio" name="lp-output-tab" id="lp-ot-4" aria-label="Tailored resume" />
-            <input type="radio" name="lp-output-tab" id="lp-ot-5" aria-label="Explanation" />
-            <input type="radio" name="lp-output-tab" id="lp-ot-6" aria-label="Improvement" />
+          <fieldset className="lp-tabs">
+            <legend className="lp-sr-only">Browse Propelt output samples</legend>
+            <input type="radio" name="lp-output-tab" id="lp-ot-1" defaultChecked aria-label="Fit analysis sample" />
+            <input type="radio" name="lp-output-tab" id="lp-ot-2" aria-label="Keyword alignment sample" />
+            <input type="radio" name="lp-output-tab" id="lp-ot-3" aria-label="Tailored summary sample" />
+            <input type="radio" name="lp-output-tab" id="lp-ot-4" aria-label="Tailored resume sample" />
+            <input type="radio" name="lp-output-tab" id="lp-ot-5" aria-label="Explanation sample" />
+            <input type="radio" name="lp-output-tab" id="lp-ot-6" aria-label="Improvement sample" />
 
-            <div className="lp-tabs-labels" role="tablist">
+            <div className="lp-tabs-labels">
               <label htmlFor="lp-ot-1"><span className="lp-tabs-n">01</span>Fit analysis</label>
               <label htmlFor="lp-ot-2"><span className="lp-tabs-n">02</span>Keywords</label>
               <label htmlFor="lp-ot-3"><span className="lp-tabs-n">03</span>Summary</label>
@@ -780,7 +772,7 @@ export default function Home() {
             <div className="lp-tabs-panels">
               <OutputTabsPanels />
             </div>
-          </div>
+          </fieldset>
         </div>
       </section>
 

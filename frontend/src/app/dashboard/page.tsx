@@ -2,23 +2,46 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import type { Application, Resume } from "@propelt/shared";
+import { useRouter } from "next/navigation";
+import type { Application, CandidateProfile, Resume } from "@propelt/shared";
 import { api } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
 import { useSession } from "@/lib/use-session";
 
+const initialProfile: CandidateProfile = {
+  fullName: "",
+  school: "",
+  course: "",
+  graduationYear: "",
+  userType: "university_student",
+  targetRole: "",
+  targetIndustry: "",
+};
+
 export default function DashboardPage() {
+  const router = useRouter();
   const { loading } = useSession();
+  const [profile, setProfile] = useState<CandidateProfile>(initialProfile);
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
+  const [resumeTitle, setResumeTitle] = useState("Main Resume");
+  const [resumeText, setResumeText] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     if (!loading) {
-      Promise.all([api.listResumes(), api.listApplications()]).then(
-        ([resumeData, applicationData]) => {
+      Promise.all([api.getProfile(), api.listResumes(), api.listApplications()]).then(
+        ([profileData, resumeData, applicationData]) => {
+          if (profileData.profile) {
+            setProfile(profileData.profile);
+          }
           setResumes(resumeData.resumes);
           setApplications(applicationData.applications);
         },
+      ).catch((loadError) =>
+        setError(loadError instanceof Error ? loadError.message : "Load failed"),
       );
     }
   }, [loading]);
@@ -27,59 +50,274 @@ export default function DashboardPage() {
     await supabase.auth.signOut();
   };
 
+  const parseResume = async () => {
+    setError("");
+    setBusy(true);
+
+    const formData = new FormData();
+    if (file) {
+      formData.append("resume", file);
+    } else {
+      formData.append("resumeText", resumeText);
+    }
+
+    try {
+      const parsed = await api.parseResume(formData);
+      setResumeText(parsed.content);
+    } catch (parseError) {
+      setError(parseError instanceof Error ? parseError.message : "Parse failed");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const saveSetup = async () => {
+    setError("");
+    setBusy(true);
+
+    try {
+      await api.saveProfile(profile);
+
+      if (resumeText.trim()) {
+        const { resume } = await api.createResume({
+          title: resumeTitle.trim() || "Main Resume",
+          content: resumeText,
+        });
+        setResumes((current) => [resume, ...current]);
+        setResumeText("");
+      }
+
+      router.push("/applications/new");
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Save failed");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   if (loading) {
     return <main className="page">Loading...</main>;
   }
 
+  const isReturning = resumes.length > 0 || applications.length > 0;
+  const eyebrowLabel = isReturning ? "Welcome back" : "Get started";
+  const heading = isReturning
+    ? "Pick up where you left off."
+    : "Build your first tailored application.";
+  const subhead = isReturning
+    ? "Your saved resumes and recent applications are in the right rail. Add a new resume below or jump straight into a new application."
+    : "Start in one place: profile context, reusable resume, then the job description you want to apply for.";
+
   return (
-    <main className="page">
-      <section className="workspace stack">
-        <div className="topbar">
-          <div>
-            <h1>Dashboard</h1>
-            <p className="muted">Manage reusable resumes and job applications.</p>
-          </div>
-          <div className="actions">
-            <Link className="button secondary" href="/resumes">
-              Resumes
-            </Link>
-            <Link className="button" href="/applications/new">
-              New application
-            </Link>
-            <button className="button ghost" type="button" onClick={signOut}>
-              Sign out
-            </button>
-          </div>
+    <main className="app-shell">
+      <aside className="app-sidebar" aria-label="Workspace navigation">
+        <Link className="app-brand" href="/dashboard" aria-label="Propelt dashboard">
+          <span className="app-brand-mark" aria-hidden="true">P</span>
+          <span>Propelt</span>
+        </Link>
+
+        <nav className="app-nav" aria-label="Primary">
+          <Link className="app-nav-link active" href="/dashboard">Home</Link>
+          <Link className="app-nav-link" href="/resumes">Resumes</Link>
+          <Link className="app-nav-link" href="/applications/new">New application</Link>
+          <Link className="app-nav-link" href="/onboarding">Full onboarding</Link>
+        </nav>
+
+        <div className="app-sidebar-footer">
+          <p className="app-sidebar-meta">Signed in workspace</p>
+          <button className="button ghost app-signout" type="button" onClick={signOut}>
+            Sign out
+          </button>
         </div>
-        <div className="grid">
-          <div className="card stack">
-            <h2>Saved resumes</h2>
-            <p className="muted">{resumes.length} reusable resume profile(s)</p>
-            {resumes.slice(0, 3).map((resume) => (
-              <div className="panel" key={resume.id}>
-                <strong>{resume.title}</strong>
+      </aside>
+
+      <section className="app-main">
+        <div className="app-topbar">
+          <div className="app-topbar-copy">
+            <p className="eyebrow">{eyebrowLabel}</p>
+            <h1>{heading}</h1>
+            <p className="muted">{subhead}</p>
+          </div>
+          <Link className="button secondary" href="/applications/new">
+            New application
+          </Link>
+        </div>
+
+        {error ? <div className="error">{error}</div> : null}
+
+        <div className="dashboard-layout">
+          <section className="onboarding-home stack" aria-label="Guided setup">
+            <article className="card stack">
+              <div className="step-heading">
+                <span className="step-number">1</span>
+                <div>
+                  <h2>Tell Propelt who you are applying as</h2>
+                  <p className="muted">
+                    This becomes reusable context for every application.
+                  </p>
+                </div>
               </div>
-            ))}
-          </div>
-          <div className="card stack">
-            <h2>Recent applications</h2>
-            {applications.length === 0 ? (
-              <p className="muted">No tailored applications yet.</p>
-            ) : (
-              applications.slice(0, 5).map((application) => (
-                <Link
-                  className="panel"
-                  href={`/applications/${application.id}`}
-                  key={application.id}
-                >
-                  <strong>{application.jobTitle || "Untitled role"}</strong>
-                  <p className="muted">{application.companyName || "No company added"}</p>
-                </Link>
-              ))
-            )}
-          </div>
+
+              <div className="grid">
+                <Field label="Full name" value={profile.fullName} onChange={(fullName) => setProfile({ ...profile, fullName })} />
+                <Field label="School" value={profile.school} onChange={(school) => setProfile({ ...profile, school })} />
+                <Field label="Course" value={profile.course} onChange={(course) => setProfile({ ...profile, course })} />
+                <Field label="Graduation year" value={profile.graduationYear} onChange={(graduationYear) => setProfile({ ...profile, graduationYear })} />
+              </div>
+
+              <div className="grid">
+                <div className="field">
+                  <label htmlFor="userType">User type</label>
+                  <select
+                    id="userType"
+                    value={profile.userType}
+                    onChange={(event) =>
+                      setProfile({
+                        ...profile,
+                        userType: event.target.value as CandidateProfile["userType"],
+                      })
+                    }
+                  >
+                    <option value="university_student">University student</option>
+                    <option value="poly_student">Poly student</option>
+                    <option value="fresh_graduate">Fresh graduate</option>
+                    <option value="early_career">Early-career professional</option>
+                  </select>
+                </div>
+                <Field label="Target industry" value={profile.targetIndustry} onChange={(targetIndustry) => setProfile({ ...profile, targetIndustry })} />
+              </div>
+
+              <Field label="Target role" value={profile.targetRole} onChange={(targetRole) => setProfile({ ...profile, targetRole })} />
+            </article>
+
+            <article className="card stack">
+              <div className="step-heading">
+                <span className="step-number">2</span>
+                <div>
+                  <h2>Save your reusable resume</h2>
+                  <p className="muted">
+                    Upload PDF/DOCX or paste text. You can reuse this resume
+                    for many jobs.
+                  </p>
+                </div>
+              </div>
+
+              <Field label="Resume name" value={resumeTitle} onChange={setResumeTitle} />
+              <div className="field">
+                <label htmlFor="resumeFile">Upload PDF or DOCX</label>
+                <input
+                  id="resumeFile"
+                  type="file"
+                  accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+                />
+              </div>
+              <div className="actions">
+                <button className="button secondary" type="button" disabled={busy} onClick={parseResume}>
+                  {busy ? "Working..." : "Parse resume"}
+                </button>
+                <span className="muted">{resumes.length} saved resume(s)</span>
+              </div>
+              <div className="field">
+                <label htmlFor="resumeText">Editable resume text preview</label>
+                <textarea
+                  id="resumeText"
+                  value={resumeText}
+                  onChange={(event) => setResumeText(event.target.value)}
+                  placeholder="Paste resume text here if upload parsing fails."
+                  style={{ minHeight: 260 }}
+                />
+              </div>
+            </article>
+
+            <article className="card setup-cta">
+              <div>
+                <span className="step-number">3</span>
+                <h2>Paste a job description next</h2>
+                <p className="muted">
+                  Once your profile and resume are ready, Propelt can generate
+                  the fit analysis, keyword alignment, tailored summary,
+                  tailored resume, reasoning, and next steps.
+                </p>
+              </div>
+              <button className="button" type="button" disabled={busy} onClick={saveSetup}>
+                {busy ? "Saving..." : "Save and start application"}
+              </button>
+            </article>
+          </section>
+
+          <aside className="dashboard-rail stack" aria-label="Workspace summary">
+            <div className="card stack">
+              <h2>Workspace status</h2>
+              <StatusRow label="Profile" value={profile.fullName || profile.school ? "Started" : "Not started"} />
+              <StatusRow label="Resumes" value={`${resumes.length} saved`} />
+              <StatusRow label="Applications" value={`${applications.length} created`} />
+            </div>
+
+            <div className="card stack">
+              <h2>Recent applications</h2>
+              {applications.length === 0 ? (
+                <p className="muted">No tailored applications yet.</p>
+              ) : (
+                applications.slice(0, 4).map((application) => (
+                  <Link
+                    className="panel"
+                    href={`/applications/${application.id}`}
+                    key={application.id}
+                  >
+                    <strong>{application.jobTitle || "Untitled role"}</strong>
+                    <p className="muted">{application.companyName || "No company added"}</p>
+                  </Link>
+                ))
+              )}
+            </div>
+
+            <div className="card stack">
+              <h2>Saved resumes</h2>
+              {resumes.length === 0 ? (
+                <p className="muted">Your first resume will appear here.</p>
+              ) : (
+                resumes.slice(0, 3).map((resume) => (
+                  <div className="panel" key={resume.id}>
+                    <strong>{resume.title}</strong>
+                  </div>
+                ))
+              )}
+            </div>
+          </aside>
         </div>
       </section>
     </main>
+  );
+}
+
+function Field({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const id = label.toLowerCase().replaceAll(" ", "-");
+  return (
+    <div className="field">
+      <label htmlFor={id}>{label}</label>
+      <input
+        id={id}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+      />
+    </div>
+  );
+}
+
+function StatusRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="status-row">
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </div>
   );
 }

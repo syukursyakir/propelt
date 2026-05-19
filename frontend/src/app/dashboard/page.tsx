@@ -110,8 +110,8 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
-      <div className="app-topbar">
-        <div className="app-topbar-copy">
+      <div className="app-page-header">
+        <div>
           <p className="eyebrow">{eyebrowLabel}</p>
           <h1>{heading}</h1>
           <p className="muted">{subhead}</p>
@@ -203,7 +203,7 @@ export default function DashboardPage() {
                   value={resumeText}
                   onChange={(event) => setResumeText(event.target.value)}
                   placeholder="Paste resume text here if upload parsing fails."
-                  style={{ minHeight: 260 }}
+                  style={{ minHeight: 200 }}
                 />
               </div>
             </article>

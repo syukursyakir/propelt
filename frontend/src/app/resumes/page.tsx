@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { Resume } from "@propelt/shared";
 import { api } from "@/lib/api";
@@ -68,16 +67,14 @@ export default function ResumesPage() {
 
   return (
     <AppShell>
-      <section className="workspace stack">
-        <div className="topbar">
-          <div>
-            <h1>Resumes</h1>
-            <p className="muted">Save reusable resume text for future applications.</p>
-          </div>
-          <Link className="button secondary" href="/dashboard">
-            Dashboard
-          </Link>
+      <div className="app-page-header">
+        <div>
+          <p className="eyebrow">Resume library</p>
+          <h1>Resumes</h1>
+          <p className="muted">Save reusable resume text. Pick one when starting a new application.</p>
         </div>
+      </div>
+      <section className="workspace stack">
         {error ? <div className="error">{error}</div> : null}
         <div className="grid">
           <div className="card stack">

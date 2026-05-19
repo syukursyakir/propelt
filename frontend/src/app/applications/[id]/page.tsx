@@ -78,23 +78,19 @@ export default function ApplicationDetailPage() {
 
   return (
     <AppShell>
-      <section className="workspace stack">
-        <div className="topbar">
-          <div>
-            <h1>{application.jobTitle || "Application result"}</h1>
-            <p className="muted">
-              {application.companyName || "No company added"} · Generated result
-            </p>
-          </div>
-          <div className="actions">
-            <Link className="button secondary" href="/dashboard">
-              Dashboard
-            </Link>
-            <Link className="button" href="/applications/new">
-              New application
-            </Link>
-          </div>
+      <div className="app-page-header">
+        <div>
+          <p className="eyebrow">Application result</p>
+          <h1>{application.jobTitle || "Untitled role"}</h1>
+          <p className="muted">
+            {application.companyName || "No company added"} · Generated result
+          </p>
         </div>
+        <Link className="button secondary" href="/applications/new">
+          New application
+        </Link>
+      </div>
+      <section className="workspace stack">
         {message ? <div className="success">{message}</div> : null}
         {error ? <div className="error">{error}</div> : null}
         <div className="card">
@@ -124,7 +120,7 @@ export default function ApplicationDetailPage() {
               id="draft"
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
-              style={{ minHeight: 420 }}
+              style={{ minHeight: 360 }}
             />
           </div>
         </div>

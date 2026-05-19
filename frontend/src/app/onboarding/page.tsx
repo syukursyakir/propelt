@@ -80,14 +80,16 @@ export default function OnboardingPage() {
 
   return (
     <AppShell>
-      <section className="workspace stack">
+      <div className="app-page-header">
         <div>
+          <p className="eyebrow">Profile setup</p>
           <h1>Set up your career profile</h1>
           <p className="muted">
-            This gives Propelt reusable context before tailoring each job
-            application.
+            Reusable context Propelt uses before tailoring each job application.
           </p>
         </div>
+      </div>
+      <section className="workspace stack">
         {error ? <div className="error">{error}</div> : null}
         <div className="card stack">
           <h2>1. Basic profile</h2>
@@ -142,7 +144,7 @@ export default function OnboardingPage() {
               value={resumeText}
               onChange={(event) => setResumeText(event.target.value)}
               placeholder="Paste resume text here if upload parsing fails."
-              style={{ minHeight: 300 }}
+              style={{ minHeight: 220 }}
             />
           </div>
         </div>

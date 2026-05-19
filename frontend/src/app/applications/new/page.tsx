@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { ApplicationQuestions, Resume } from "@propelt/shared";
@@ -70,16 +69,14 @@ export default function NewApplicationPage() {
 
   return (
     <AppShell>
-      <section className="workspace stack">
-        <div className="topbar">
-          <div>
-            <h1>New application</h1>
-            <p className="muted">Choose a resume, paste the JD, answer five questions.</p>
-          </div>
-          <Link className="button secondary" href="/dashboard">
-            Dashboard
-          </Link>
+      <div className="app-page-header">
+        <div>
+          <p className="eyebrow">New application</p>
+          <h1>Tailor a job application</h1>
+          <p className="muted">Choose a resume, paste the JD, answer five questions.</p>
         </div>
+      </div>
+      <section className="workspace stack">
         {error ? <div className="error">{error}</div> : null}
         <div className="card stack">
           <div className="grid">
@@ -104,7 +101,7 @@ export default function NewApplicationPage() {
           </div>
           <div className="field">
             <label htmlFor="jd">Job description</label>
-            <textarea id="jd" value={jobDescription} onChange={(event) => setJobDescription(event.target.value)} style={{ minHeight: 260 }} />
+            <textarea id="jd" value={jobDescription} onChange={(event) => setJobDescription(event.target.value)} style={{ minHeight: 200 }} />
           </div>
         </div>
         <div className="card stack">

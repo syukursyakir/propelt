@@ -68,6 +68,11 @@ export const api = {
       method: "POST",
       body: JSON.stringify(payload),
     }),
+  updateResume: (id: string, payload: { title: string; content: string }) =>
+    apiFetch<{ resume: Resume }>(`/api/resumes/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    }),
   deleteResume: (id: string) =>
     apiFetch<void>(`/api/resumes/${id}`, { method: "DELETE" }),
   listApplications: () =>

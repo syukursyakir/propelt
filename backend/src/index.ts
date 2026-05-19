@@ -2,11 +2,14 @@ import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import multer from "multer";
+import { ZodError } from "zod";
 import {
   applicationQuestionSchema,
   candidateProfileSchema,
   generateApplicationRequestSchema,
+  generatedResultSchema,
   healthCheckSchema,
+  updateResumeRequestSchema,
 } from "@propelt/shared";
 import type { CandidateProfile } from "@propelt/shared";
 import { requireUser } from "./auth.js";
@@ -92,6 +95,14 @@ const asyncRoute =
   ) =>
   (request: express.Request, response: express.Response) => {
     handler(request, response).catch((error: unknown) => {
+      if (error instanceof ZodError) {
+        const issue = error.issues[0];
+        const message = issue
+          ? `${issue.path.join(".") || "request"}: ${issue.message}`
+          : "Invalid request body";
+        response.status(400).json({ error: message });
+        return;
+      }
       const message =
         error instanceof Error ? error.message : "Unexpected server error";
       response.status(500).json({ error: message });
@@ -209,6 +220,42 @@ app.post(
     }
 
     response.status(201).json({
+      resume: {
+        id: data.id,
+        title: data.title,
+        content: data.content,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+      },
+    });
+  }),
+);
+
+app.patch(
+  "/api/resumes/:id",
+  requireUser,
+  asyncRoute(async (request, response) => {
+    const payload = updateResumeRequestSchema.parse(request.body);
+    const admin = requireAdmin();
+
+    const { data, error } = await admin
+      .from("resumes")
+      .update({ title: payload.title, content: payload.content })
+      .eq("id", request.params.id)
+      .eq("user_id", request.userId)
+      .select("id,title,content,created_at,updated_at")
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+      response.status(404).json({ error: "Resume not found" });
+      return;
+    }
+
+    response.json({
       resume: {
         id: data.id,
         title: data.title,
@@ -367,7 +414,7 @@ app.patch(
   requireUser,
   asyncRoute(async (request, response) => {
     const admin = requireAdmin();
-    const { result } = request.body;
+    const result = generatedResultSchema.parse(request.body?.result);
 
     const { data, error } = await admin
       .from("applications")

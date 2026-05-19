@@ -3304,6 +3304,14 @@ button.app-nav-link:focus-visible,
   color: var(--shell-error);
 }
 
+/* Armed delete: two-step inline confirm */
+.app-shell .button.ghost.resume-delete-armed,
+.app-shell .button.ghost.app-list-delete-armed {
+  background: #fef0ed;
+  color: var(--shell-error);
+  border: 1px solid #e6b9b3;
+}
+
 /* ---------- Empty state card ---------- */
 .app-empty {
   display: grid;

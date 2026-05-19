@@ -10,25 +10,33 @@ import { AppShell } from "@/components/app-shell";
 export default function ApplicationsPage() {
   const { loading } = useSession();
   const [applications, setApplications] = useState<Application[]>([]);
+  const [fetched, setFetched] = useState(false);
   const [error, setError] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [armedId, setArmedId] = useState<string | null>(null);
 
   useEffect(() => {
     if (loading) return;
     api.listApplications().then(({ applications }) => {
       setApplications(applications);
-    }).catch((loadError) =>
-      setError(loadError instanceof Error ? loadError.message : "Load failed"),
-    );
+      setFetched(true);
+    }).catch((loadError) => {
+      setError(loadError instanceof Error ? loadError.message : "Load failed");
+      setFetched(true);
+    });
   }, [loading]);
 
   const remove = async (id: string) => {
-    if (!confirm("Delete this application? This cannot be undone.")) return;
+    if (armedId !== id) {
+      setArmedId(id);
+      return;
+    }
     setBusyId(id);
     setError("");
     try {
       await api.deleteApplication(id);
       setApplications((current) => current.filter((item) => item.id !== id));
+      setArmedId(null);
     } catch (deleteError) {
       setError(deleteError instanceof Error ? deleteError.message : "Delete failed");
     } finally {
@@ -59,7 +67,9 @@ export default function ApplicationsPage() {
 
       {error ? <div className="error">{error}</div> : null}
 
-      {applications.length === 0 ? (
+      {!fetched ? (
+        <p className="muted">Loading your applications…</p>
+      ) : applications.length === 0 ? (
         <div className="card stack app-empty">
           <div>
             <h2>No applications yet</h2>
@@ -94,12 +104,19 @@ export default function ApplicationsPage() {
               </Link>
               <button
                 type="button"
-                className="button ghost app-list-delete"
+                className={`button ghost app-list-delete${armedId === application.id ? " app-list-delete-armed" : ""}`}
                 onClick={() => remove(application.id)}
+                onBlur={() =>
+                  setArmedId((current) => (current === application.id ? null : current))
+                }
                 disabled={busyId === application.id}
                 aria-label="Delete application"
               >
-                {busyId === application.id ? "Deleting…" : "Delete"}
+                {busyId === application.id
+                  ? "Deleting…"
+                  : armedId === application.id
+                    ? "Confirm delete"
+                    : "Delete"}
               </button>
             </li>
           ))}

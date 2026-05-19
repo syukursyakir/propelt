@@ -24,6 +24,7 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<CandidateProfile>(initialProfile);
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
+  const [dataLoaded, setDataLoaded] = useState(false);
   const [resumeTitle, setResumeTitle] = useState("Main Resume");
   const [resumeText, setResumeText] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -39,10 +40,12 @@ export default function DashboardPage() {
           }
           setResumes(resumeData.resumes);
           setApplications(applicationData.applications);
+          setDataLoaded(true);
         },
-      ).catch((loadError) =>
-        setError(loadError instanceof Error ? loadError.message : "Load failed"),
-      );
+      ).catch((loadError) => {
+        setError(loadError instanceof Error ? loadError.message : "Load failed");
+        setDataLoaded(true);
+      });
     }
   }, [loading]);
 
@@ -91,7 +94,7 @@ export default function DashboardPage() {
     }
   };
 
-  if (loading) {
+  if (loading || !dataLoaded) {
     return (
       <AppShell>
         <p className="muted">Loading workspace…</p>

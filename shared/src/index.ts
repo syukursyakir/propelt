@@ -38,12 +38,25 @@ export type Resume = z.infer<typeof resumeSchema>;
 export const applicationQuestionSchema = z.object({
   targetRoleOrIndustry: z.string().min(1),
   strongestSkills: z.string().min(1),
-  proudestExperiences: z.string().min(1),
-  achievementsToHighlight: z.string().min(1),
-  guardrails: z.string().min(1),
+  // Optional positioning context — empty string allowed.
+  proudestExperiences: z.string().default(""),
+  achievementsToHighlight: z.string().default(""),
+  guardrails: z
+    .string()
+    .default("Do not invent experience, skills, metrics, or certifications."),
 });
 
 export type ApplicationQuestions = z.infer<typeof applicationQuestionSchema>;
+
+export const updateResumeRequestSchema = z.object({
+  title: z.string().trim().min(1, "Resume title is required"),
+  content: z
+    .string()
+    .trim()
+    .min(50, "Resume content needs at least 50 characters"),
+});
+
+export type UpdateResumeRequest = z.infer<typeof updateResumeRequestSchema>;
 
 const bulletListSchema = z.array(z.string());
 

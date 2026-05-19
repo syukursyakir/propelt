@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AuthHashRedirect } from "./auth-hash-redirect";
 
 // ============================================================
 //   DATA
@@ -444,6 +445,7 @@ function OutputTabsPanels() {
 export default function Home() {
   return (
     <main className="lp">
+      <AuthHashRedirect />
       <header className="lp-header" aria-label="Site header">
         <div className="lp-header-inner">
           <Link className="lp-brand" href="/" aria-label="Propelt home">

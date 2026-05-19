@@ -99,14 +99,35 @@ export default function DashboardPage() {
     );
   }
 
-  const isReturning = resumes.length > 0 || applications.length > 0;
-  const eyebrowLabel = isReturning ? "Welcome back" : "Get started";
-  const heading = isReturning
-    ? "Pick up where you left off."
-    : "Build your first tailored application.";
-  const subhead = isReturning
-    ? "Your saved resumes and recent applications are in the right rail. Add a new resume below or jump straight into a new application."
-    : "Start in one place: profile context, reusable resume, then the job description you want to apply for.";
+  const hasProfile = Boolean(profile.fullName.trim() || profile.school.trim());
+  const hasResume = resumes.length > 0;
+  const setupComplete = hasProfile && hasResume;
+
+  let eyebrowLabel: string;
+  let heading: string;
+  let subhead: string;
+
+  if (setupComplete) {
+    eyebrowLabel = "Welcome back";
+    heading = "Pick up where you left off.";
+    subhead =
+      "Your saved resumes and recent applications are in the right rail. Jump into a new application or refine your setup below.";
+  } else if (hasResume) {
+    eyebrowLabel = "Almost there";
+    heading = "Finish your candidate profile.";
+    subhead =
+      "A few profile details give future applications richer context.";
+  } else if (hasProfile) {
+    eyebrowLabel = "Almost there";
+    heading = "Save your first resume.";
+    subhead =
+      "Upload a PDF, DOCX, or paste text. You'll reuse this for every application.";
+  } else {
+    eyebrowLabel = "Get started";
+    heading = "Build your first tailored application.";
+    subhead =
+      "Start in one place: profile context, reusable resume, then the job description you want to apply for.";
+  }
 
   return (
     <AppShell>
@@ -124,6 +145,35 @@ export default function DashboardPage() {
       {error ? <div className="error">{error}</div> : null}
 
         <div className="dashboard-layout">
+          {setupComplete ? (
+            <section className="onboarding-home stack" aria-label="Workspace ready">
+              <article className="card setup-cta">
+                <div>
+                  <p className="eyebrow">Ready to apply</p>
+                  <h2>Your workspace is set up.</h2>
+                  <p className="muted">
+                    Start a tailored application — paste a JD, answer a few
+                    questions, and receive a fit analysis, keyword alignment,
+                    summary, rewritten resume, explanation, and next steps.
+                  </p>
+                </div>
+                <Link className="button" href="/applications/new">
+                  Start new application
+                </Link>
+              </article>
+              <article className="card stack">
+                <div className="step-heading">
+                  <span className="step-number">+</span>
+                  <div>
+                    <h2>Refine your setup</h2>
+                    <p className="muted">
+                      Edit profile in <Link href="/onboarding" className="inline-link">full onboarding</Link> or manage saved resumes in <Link href="/resumes" className="inline-link">the resume library</Link>.
+                    </p>
+                  </div>
+                </div>
+              </article>
+            </section>
+          ) : (
           <section className="onboarding-home stack" aria-label="Guided setup">
             <article className="card stack">
               <div className="step-heading">
@@ -223,6 +273,7 @@ export default function DashboardPage() {
               </button>
             </article>
           </section>
+          )}
 
           <aside className="dashboard-rail stack" aria-label="Workspace summary">
             <div className="card stack">
@@ -233,7 +284,12 @@ export default function DashboardPage() {
             </div>
 
             <div className="card stack">
-              <h2>Recent applications</h2>
+              <div className="rail-card-head">
+                <h2>Recent applications</h2>
+                {applications.length > 0 ? (
+                  <Link href="/applications" className="inline-link">View all</Link>
+                ) : null}
+              </div>
               {applications.length === 0 ? (
                 <p className="muted">No tailored applications yet.</p>
               ) : (
@@ -251,7 +307,12 @@ export default function DashboardPage() {
             </div>
 
             <div className="card stack">
-              <h2>Saved resumes</h2>
+              <div className="rail-card-head">
+                <h2>Saved resumes</h2>
+                {resumes.length > 0 ? (
+                  <Link href="/resumes" className="inline-link">View all</Link>
+                ) : null}
+              </div>
               {resumes.length === 0 ? (
                 <p className="muted">Your first resume will appear here.</p>
               ) : (

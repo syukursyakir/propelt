@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 export default function AuthPage() {
@@ -13,6 +13,23 @@ export default function AuthPage() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
+
+  // If a session already exists, send the user to the dashboard.
+  useEffect(() => {
+    let cancelled = false;
+    supabase.auth.getSession().then(({ data }) => {
+      if (cancelled) return;
+      if (data.session) {
+        router.replace("/dashboard");
+        return;
+      }
+      setChecking(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [router]);
 
   const handleEmail = async () => {
     setError("");
@@ -47,6 +64,14 @@ export default function AuthPage() {
       },
     });
   };
+
+  if (checking) {
+    return (
+      <main className="page">
+        <p className="muted" style={{ padding: 24 }}>Loading…</p>
+      </main>
+    );
+  }
 
   return (
     <main className="page">

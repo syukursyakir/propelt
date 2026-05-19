@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-type IconKey = "home" | "resumes" | "newapp" | "user";
+type IconKey = "home" | "resumes" | "newapp" | "folder" | "user";
 type AnyIconName = IconKey | "sidebar" | "signout";
 
 type NavItem = {
@@ -14,6 +14,10 @@ type NavItem = {
   iconKey: IconKey;
   /** Path prefix that activates this link. Defaults to href. */
   match?: string;
+  /** If true, only an exact pathname === href counts as active. */
+  exact?: boolean;
+  /** Paths that should NOT activate this item even if they match the prefix. */
+  excludePrefixes?: string[];
 };
 
 const NAV: NavItem[] = [
@@ -23,7 +27,13 @@ const NAV: NavItem[] = [
     href: "/applications/new",
     label: "New application",
     iconKey: "newapp",
-    match: "/applications",
+    exact: true,
+  },
+  {
+    href: "/applications",
+    label: "Applications",
+    iconKey: "folder",
+    excludePrefixes: ["/applications/new"],
   },
   { href: "/onboarding", label: "Full onboarding", iconKey: "user" },
 ];
@@ -64,8 +74,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   const isActive = (item: NavItem) => {
+    if (item.exact) return pathname === item.href;
     const match = item.match ?? item.href;
-    return pathname === match || pathname.startsWith(match + "/");
+    const matches = pathname === match || pathname.startsWith(match + "/");
+    if (!matches) return false;
+    if (item.excludePrefixes) {
+      const excluded = item.excludePrefixes.some(
+        (prefix) => pathname === prefix || pathname.startsWith(prefix + "/"),
+      );
+      if (excluded) return false;
+    }
+    return true;
   };
 
   return (
@@ -151,6 +170,13 @@ function Icon({ name }: { name: AnyIconName }) {
           <path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
           <path d="M14 3v5h5" />
           <path d="M12 12v6M9 15h6" />
+        </svg>
+      );
+    case "folder":
+      return (
+        <svg className="app-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M3 7a2 2 0 0 1 2-2h3.5l2 2H19a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" />
+          <path d="M3 10h18" />
         </svg>
       );
     case "user":
